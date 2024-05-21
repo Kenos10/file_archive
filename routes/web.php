@@ -30,7 +30,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Add your new routes here
     Route::get('/add-patient', function () {
         return view('addpatient');
     })->name('addpatient');
@@ -49,7 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/downloadzip/{id}', [ArchiveController::class, 'download'])->name('zip');
     Route::get('/storezip/{id}', [ArchiveController::class, 'downloadPath'])->name('store.zip');
 
-    Route::resource('archives', ArchiveController::class); // Note the plural 'archives'
+    Route::resource('archives', ArchiveController::class);
     Route::resource('patients', PatientController::class);
     Route::resource('files', FileController::class);
 });

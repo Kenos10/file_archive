@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 use App\Models\File;
-use App\Models\PasswordZip;
+use App\Models\Patient;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\Archive;
 use App\Models\Configuration;
@@ -21,13 +21,12 @@ class ArchiveController extends Controller
     {
         $search = $request->get('search');
         $zips = Archive::where('hospitalRecordId', 'like', '%' . $search . '%')
-            ->paginate(10);
+            ->paginate(8);
         return view('zips', compact('zips'));
     }
 
     public function store(Request $request)
     {
-        $folderName = now()->format('YmdHis');
         $selectedFiles = $request->input('files');
 
         if (!is_array($selectedFiles)) {
@@ -40,7 +39,7 @@ class ArchiveController extends Controller
             $path = $file->file;
             $hospitalRecordId = $file->hospitalRecordId;
 
-            $passwordZip = PasswordZip::where('hospitalRecordId', $hospitalRecordId)->first();
+            $passwordZip = Patient::where('hospitalRecordId', $hospitalRecordId)->first();
             if (!$passwordZip) {
                 return redirect()->back()->withInput()->withErrors(['error' => 'Please set password']);
             }
@@ -49,10 +48,11 @@ class ArchiveController extends Controller
             $path = str_replace('/storage/', '', $path);
             $absolutePath = storage_path('app/public/' . $path);
 
-            // No decryption of file content
-            $fileContent = file_get_contents($absolutePath);
+            // Decrypt the file content
+            $encryptedContent = file_get_contents($absolutePath);
+            $decryptedContent = Crypt::decrypt($encryptedContent);
 
-            $filesToZip[] = ['content' => $fileContent, 'password' => $password, 'filename' => basename($absolutePath)];
+            $filesToZip[] = ['content' => $decryptedContent, 'password' => $password, 'filename' => basename($absolutePath)];
         }
 
         if (empty($filesToZip)) {
@@ -65,7 +65,7 @@ class ArchiveController extends Controller
             mkdir($zipDirectory, 0775, true);
         }
         // Using hospitalRecordId and current date for zip file name
-        $zipFileName = $zipDirectory . '/' . $hospitalRecordId . '_' . now()->format('Ymd') . '.zip';
+        $zipFileName = $zipDirectory . '/' . $hospitalRecordId . '.zip';
 
         if ($zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
             foreach ($filesToZip as $file) {
@@ -75,7 +75,7 @@ class ArchiveController extends Controller
             $zip->close();
 
             Archive::create([
-                'zip' => '/storage/zip_files/' . $hospitalRecordId . '_' . now()->format('Ymd') . '.zip',
+                'zip' => '/storage/zip_files/' . $hospitalRecordId . '.zip',
                 'hospitalRecordId' => $hospitalRecordId,
             ]);
 
@@ -88,22 +88,39 @@ class ArchiveController extends Controller
 
     public function download($id)
     {
+        // Retrieve the zip file record from the database using the provided id
         $file = Archive::where("id", $id)->firstOrFail();
         $path = $file->zip;
 
-        // Remove the '/storage/' from the beginning of the path
-        $path = str_replace('/storage/', '', $path);
+        // Remove the '/storage/' from the beginning of the path to get the relative path
+        $relativePath = str_replace('/storage/', '', $path);
+
+        // Get the absolute path to the file in the storage
+        $absolutePath = storage_path('app/public/' . $relativePath);
+
+        // Check if the file exists
+        if (!file_exists($absolutePath)) {
+            return redirect()->back()->withErrors(['error' => 'File not found.']);
+        }
 
         // Get the file contents
-        $absolutePath = storage_path('app/public/' . $path);
         $contents = file_get_contents($absolutePath);
 
         // Generate a temporary file with the contents
         $tempPath = tempnam(sys_get_temp_dir(), 'dec');
         file_put_contents($tempPath, $contents);
 
-        // Download the file from the temporary path
-        return response()->download($tempPath, basename($path))->deleteFileAfterSend(true);
+        // Prepare the response to download the temporary file and delete it after sending
+        $response = response()->download($tempPath, basename($relativePath))->deleteFileAfterSend(true);
+
+        // Delete the file from the storage
+        Storage::delete('public/' . $relativePath);
+
+        // Remove the record from the database
+        $file->delete();
+
+        // Return the response
+        return $response;
     }
 
     public function downloadPath($id)

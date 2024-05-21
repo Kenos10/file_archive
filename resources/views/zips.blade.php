@@ -1,10 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex w-100 justify-between align-items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <div class="flex justify-between items-center w-full">
+            <h2 class="font-semibold text-2xl text-gray-900">
                 {{ __('Zips') }}
             </h2>
-            <form method="GET" action="{{ route('archives.index') }}" class="flex space-x-2 align-items-center">
+            <form method="GET" action="{{ route('archives.index') }}" class="flex space-x-2 items-center">
                 <div class="w-full max-w-xs">
                     <input type="text" name="search"
                         class="w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
@@ -20,15 +20,15 @@
         </div>
     </x-slot>
 
-    <div class="alert-container my-2">
+    <div class="mt-4">
         @if ($message = Session::get('success'))
-            <div class="alert alert-success">
-                <strong>{{ $message }}</strong>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">{{ $message }}</strong>
             </div>
         @endif
         @if (count($errors) > 0)
-            <div class="alert alert-danger">
-                <ul>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
+                <ul class="list-disc list-inside">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -37,26 +37,38 @@
         @endif
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-hover my-5">
-            <thead>
+    <div class="mt-8 mx-auto w-10/12 overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+        <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col">
-                        Hospital Record ID</th>
-                    <th scope="col">
-                        Date Zip</th>
-                    <th scope="col"></th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Hospital Record ID
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date Zip
+                    </th>
+                    <th scope="col" class="relative px-6 py-3">
+                        <span class="sr-only">Actions</span>
+                    </th>
                 </tr>
             </thead>
-            <tbody class="table-group-divider">
+            <tbody class="divide-y divide-gray-200 bg-white">
                 @foreach ($zips as $zip)
-                    <tr class="fs-5 align-middle">
-                        <td>{{ $zip->hospitalRecordId }}</td>
-                        <td>{{ $zip->created_at->format('F j, Y, h:i:s a') }}</td>
-                        <td>
-                            <div class="btn-group" role="group" aria-label="Zip Actions">
-                                <a class="btn btn-primary" href="{{ route('zip', $zip->id) }}">Download</a>
-                                <a class="btn btn-secondary" href="{{ route('store.zip', $zip->id) }}">Archive</a>
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ $zip->hospitalRecordId }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ $zip->created_at->format('F j, Y, h:i:s a') }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="inline-flex space-x-2">
+                                <a href="{{ route('zip', $zip->id) }}"
+                                    class="text-indigo-600 hover:text-indigo-900 px-3 py-2 rounded-md bg-indigo-100 hover:bg-indigo-200">Download</a>
+                                <a href="{{ route('store.zip', $zip->id) }}"
+                                    class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200">Archive</a>
                             </div>
                         </td>
                     </tr>
@@ -65,5 +77,7 @@
         </table>
     </div>
 
-    {{ $zips->links() }}
+    <div class="mt-6 mx-auto w-10/12">
+        {{ $zips->links() }}
+    </div>
 </x-app-layout>

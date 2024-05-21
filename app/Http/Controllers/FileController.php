@@ -2,14 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ArchiveDirectory;
 use Illuminate\Http\Request;
 use App\Models\File;
-use App\Models\Configuration;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
-use Config;
-use Artisan;
 
 class FileController extends Controller
 {
@@ -20,7 +14,7 @@ class FileController extends Controller
         $files = File::where('hospitalRecordId', 'like', '%' . $search . '%')
             ->orWhere('fileNo', 'like', '%' . $search . '%')
             ->orderByDesc('fileNo')
-            ->paginate(10);
+            ->paginate(8);
         return view('files', compact('files'));
     }
 
@@ -64,42 +58,6 @@ class FileController extends Controller
         }
 
         // Return an error response if the file upload fails
-        return redirect()->route('viewpatientlist')->with('error', 'File upload failed.');
+        return redirect()->route('pages.viewpatientlist')->with('error', 'File upload failed.');
     }
-
-    // public function create()
-    // {
-    //     return view('files.create');
-    // }
-
-    // public function show(File $file)
-    // {
-    //     return view('files.show', compact('file'));
-    // }
-
-    // public function edit(File $file)
-    // {
-    //     return view('files.edit', compact('file'));
-    // }
-
-    // public function update(Request $request, File $file)
-    // {
-    //     $request->validate([
-    //         'hospitalRecordId' => 'required',
-    //         'file' => 'required',
-    //     ]);
-
-    //     $file->update($request->all());
-
-    //     return redirect()->route('files.index')
-    //         ->with('success', 'File updated successfully');
-    // }
-
-    // public function destroy(File $file)
-    // {
-    //     $file->delete();
-
-    //     return redirect()->route('files.index')
-    //         ->with('success', 'File deleted successfully');
-    // }
 }

@@ -16,7 +16,8 @@ class Patient extends Model
         'firstName',
         'middleName',
         'lastName',
-        'dateOfBirth'
+        'dateOfBirth',
+        'password',
     ];
 
     public function files(): HasMany

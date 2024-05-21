@@ -1,11 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex w-100 justify-between align-items-center">
-            <h2 class="font-semibold text-xl text-gray-800">
+        <div class="flex justify-between items-center w-full">
+            <h2 class="font-semibold text-2xl text-gray-900">
                 {{ __('Files') }}
             </h2>
-
-            <form method="GET" action="{{ route('files.index') }}" class="flex space-x-2">
+            <form method="GET" action="{{ route('files.index') }}" class="flex space-x-2 items-center">
                 <div class="w-full max-w-xs">
                     <input type="text" name="search"
                         class="w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
@@ -21,24 +20,36 @@
         </div>
     </x-slot>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-hover my-5">
-            <thead>
+    <div class="mt-8 mx-auto w-10/12 overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+        <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col">
-                        Hospital Record ID</th>
-                    <th scope="col">
-                        File No</th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Hospital Record ID
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        File No
+                    </th>
+                    <th scope="col" class="relative px-6 py-3">
+                        <span class="sr-only">View</span>
+                    </th>
                 </tr>
             </thead>
-            <tbody class="table-group-divider">
+            <tbody class="divide-y divide-gray-200 bg-white">
                 @foreach ($files as $file)
-                    <tr class="fs-5 align-middle">
-                        <td>{{ $file->hospitalRecordId }}</td>
-                        <td>{{ $file->fileNo }}</td>
-                        <td>
-                            <a href="{{ route('patients.show', $file->hospitalRecordId) }}">
-                                <i class="bi bi-eye fs-1"></i>
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ $file->hospitalRecordId }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ $file->fileNo }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a href="{{ route('patients.show', $file->hospitalRecordId) }}"
+                                class="text-indigo-600 hover:text-indigo-900">
+                                View</a>
                             </a>
                         </td>
                     </tr>
@@ -47,5 +58,7 @@
         </table>
     </div>
 
-    {{ $files->links() }}
+    <div class="mt-6 mx-auto w-10/12">
+        {{ $files->links() }}
+    </div>
 </x-app-layout>

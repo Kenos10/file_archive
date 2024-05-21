@@ -6,7 +6,6 @@ use App\Models\Archive;
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use App\Models\File;
-use App\Models\PasswordZip;
 use Illuminate\Support\Str;
 
 class PatientController extends Controller
@@ -20,7 +19,7 @@ class PatientController extends Controller
             ->orWhere('hospitalRecordId', 'like', '%' . $search . '%')
             ->orWhere('caseNo', 'like', '%' . $search . '%')
             ->orderByDesc('created_at')
-            ->paginate(10);
+            ->paginate(8);
         return view('patientlist', compact('patients'));
     }
 
@@ -37,16 +36,18 @@ class PatientController extends Controller
             'dateOfBirth' => 'required',
         ]);
 
-        // Create the patient record
-        $patient = Patient::create($validatedData);
-
         // Generate a random password
-        $password = Str::random(10); // Adjust the length as needed
-        $encryptedPassword = encrypt($password); // Encrypt the password
+        $password = Str::random(8);
+        $encryptedPassword = encrypt($password);
 
-        // Create a new PasswordZip record associated with the patient
-        PasswordZip::create([
-            'hospitalRecordId' => $patient->hospitalRecordId,
+        // Create a new Patient record
+        Patient::create([
+            'hospitalRecordId' => $validatedData['hospitalRecordId'],
+            'caseNo' => $validatedData['caseNo'],
+            'firstName' => $validatedData['firstName'],
+            'middleName' => $validatedData['middleName'],
+            'lastName' => $validatedData['lastName'],
+            'dateOfBirth' => $validatedData['dateOfBirth'],
             'password' => $encryptedPassword,
         ]);
 
@@ -60,9 +61,8 @@ class PatientController extends Controller
         $files = File::where('hospitalRecordId', $hospitalRecordId)->get();
         $zipfile = Archive::where('hospitalRecordId', $hospitalRecordId)->get();
 
-        $passwordRecord = PasswordZip::where('hospitalRecordId', $hospitalRecordId)->first();
-        if ($passwordRecord) {
-            $decryptedPassword = decrypt($passwordRecord->password);
+        if ($patient->password) {
+            $decryptedPassword = decrypt($patient->password);
         } else {
             $decryptedPassword = null;
         }
@@ -91,35 +91,4 @@ class PatientController extends Controller
             ->header('Content-Type', $mimeType)
             ->header('Content-Disposition', 'inline; filename="' . basename($path) . '"');
     }
-
-    // public function edit(Patient $patient)
-    // {
-    //     return view('patients.edit', compact('patient'));
-    // }
-
-    // public function create()
-    // {
-    //     return view('patients.create');
-    // }
-
-    // public function update(Request $request, Patient $patient)
-    // {
-    //     $validatedData = $request->validate([
-    //         'hospitalRecordId' => 'required',
-    //         'caseNo' => 'required',
-    //         'firstName' => 'required',
-    //         'middleName' => 'required',
-    //         'lastName' => 'required',
-    //         'dateOfBirth' => 'required',
-    //     ]);
-
-    //     $patient->update($validatedData);
-    //     return redirect()->route('patients.index')->with('success', 'Patient updated successfully.');
-    // }
-
-    // public function destroy(Patient $patient)
-    // {
-    //     $patient->delete();
-    //     return redirect()->route('patients.index')->with('success', 'Patient deleted successfully.');
-    // }
 }
