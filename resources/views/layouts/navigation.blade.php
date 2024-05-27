@@ -27,6 +27,9 @@
                     <x-nav-link :href="route('archives.index')" :active="request()->routeIs('archives.index')">
                         {{ __('Zip') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('extract')" :active="request()->routeIs('extract')">
+                        {{ __('Extract Zip') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('setting')" :active="request()->routeIs('setting')">
                         {{ __('Settings') }}
                     </x-nav-link>

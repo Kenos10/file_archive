@@ -69,26 +69,4 @@ class PatientController extends Controller
 
         return view('viewpatient', compact('patient', 'files', 'zipfile', 'decryptedPassword'));
     }
-
-    public function view($id)
-    {
-        $file = File::where("id", $id)->firstOrFail();
-        $path = $file->file;
-
-        // Remove the '/storage/' from the beginning of the path
-        $path = str_replace('/storage/', '', $path);
-
-        // Get the file contents
-        $absolutePath = storage_path('app/public/' . $path);
-        $encryptedContents = file_get_contents($absolutePath);
-        $decryptedContents = decrypt($encryptedContents);
-
-        // Determine the MIME type
-        $mimeType = mime_content_type($absolutePath);
-
-        // Return the file contents as a response with the appropriate headers
-        return response($decryptedContents)
-            ->header('Content-Type', $mimeType)
-            ->header('Content-Disposition', 'inline; filename="' . basename($path) . '"');
-    }
 }

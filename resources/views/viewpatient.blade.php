@@ -69,9 +69,6 @@
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     File No</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    File</th>
                             </tr>
                         </thead>
                         <tbody class="align-middle">
@@ -80,9 +77,6 @@
                                     <td class="px-4 py-2"><input type="checkbox" name="files[]"
                                             value="{{ $file->id }}"></td>
                                     <td class="px-4 py-2">{{ $file->fileNo }}</td>
-                                    <td class="px-4 py-2"><a href="{{-- route('view.file', $file->id) --}} "
-                                            class="text-indigo-600 hover:text-indigo-900">
-                                            View</a></td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -113,8 +107,7 @@
                                     <td class="px-4 py-2">
                                         <div class="btn-group" role="group" aria-label="Zip Actions">
                                             <a href="{{ route('zip', $zip->id) }}"
-                                                id="downloadLink{{ $zip->id }}"
-                                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">Download</a>
+                                                class="download-link bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">Download</a>
                                             <a href="{{ route('store.zip', $zip->id) }}"
                                                 class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Archive</a>
                                         </div>
@@ -169,27 +162,11 @@
 
             document.addEventListener('DOMContentLoaded', function() {
                 // Target all download links
-                const downloadLinks = document.querySelectorAll('[id^="downloadLink"]');
+                const downloadLinks = document.querySelectorAll('.download-link');
 
                 downloadLinks.forEach(link => {
                     link.addEventListener('click', function(e) {
-                        e.preventDefault(); // Prevent the default link behavior
-                        const url = this.href;
-
-                        // Create a temporary anchor element to trigger the download
-                        let tempLink = document.createElement('a');
-                        tempLink.href = url;
-                        tempLink.download = '';
-                        tempLink.style.display = 'none';
-                        document.body.appendChild(tempLink);
-
-                        // Trigger the download
-                        tempLink.click();
-
-                        // Remove the temporary link
-                        document.body.removeChild(tempLink);
-
-                        // Refresh the page after a short delay
+                        // Delay to ensure file is downloaded before refresh
                         setTimeout(() => {
                             window.location.reload();
                         }, 2000); // Adjust the delay time as needed
@@ -198,5 +175,4 @@
             });
         </script>
     </x-slot>
-
 </x-app-layout>

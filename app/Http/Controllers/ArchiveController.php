@@ -88,40 +88,30 @@ class ArchiveController extends Controller
 
     public function download($id)
     {
-        // Retrieve the zip file record from the database using the provided id
         $file = Archive::where("id", $id)->firstOrFail();
         $path = $file->zip;
 
-        // Remove the '/storage/' from the beginning of the path to get the relative path
-        $relativePath = str_replace('/storage/', '', $path);
+        // Convert public path to storage path
+        $absolutePath = public_path($path);
+        Log::info('Absolute Path for download: ' . $absolutePath);
 
-        // Get the absolute path to the file in the storage
-        $absolutePath = storage_path('app/public/' . $relativePath);
-
-        // Check if the file exists
         if (!file_exists($absolutePath)) {
+            Log::error('File not found: ' . $absolutePath);
             return redirect()->back()->withErrors(['error' => 'File not found.']);
         }
 
-        // Get the file contents
-        $contents = file_get_contents($absolutePath);
+        // Create a download response
+        $response = response()->download($absolutePath, basename($path));
 
-        // Generate a temporary file with the contents
-        $tempPath = tempnam(sys_get_temp_dir(), 'dec');
-        file_put_contents($tempPath, $contents);
+        // After download delete the file from storage and database
+        $response->deleteFileAfterSend(true);
 
-        // Prepare the response to download the temporary file and delete it after sending
-        $response = response()->download($tempPath, basename($relativePath))->deleteFileAfterSend(true);
-
-        // Delete the file from the storage
-        Storage::delete('public/' . $relativePath);
-
-        // Remove the record from the database
+        // Delete file record from the database
         $file->delete();
 
-        // Return the response
         return $response;
     }
+
 
     public function downloadPath($id)
     {
