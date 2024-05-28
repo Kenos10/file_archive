@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth/login');
 });
 
 Route::get('/dashboard', function () {
@@ -56,6 +56,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/update-storage-path', [ArchiveController::class, 'updateStoragePath'])->name('update.storage.path');
     Route::get('/downloadzip/{id}', [ArchiveController::class, 'download'])->name('zip');
     Route::get('/storezip/{id}', [ArchiveController::class, 'downloadPath'])->name('store.zip');
+    Route::post('/update-case-number-format', [App\Http\Controllers\ArchiveController::class, 'updateCaseNumberFormat'])->name('update.case.number.format');
+
 
     Route::get('/zip', function () {
         return view('zip');
@@ -68,6 +70,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('patients', PatientController::class);
     Route::resource('files', FileController::class);
     Route::resource('zips', ZipExtractController::class);
+
+
 });
 
 require __DIR__ . '/auth.php';

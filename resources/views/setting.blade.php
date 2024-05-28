@@ -16,8 +16,6 @@
                         <form method="POST" action="{{ route('update.starting.value') }}">
                             @csrf
                             <div class="mb-4">
-                                <label for="starting_value" class="block text-gray-700 font-medium mb-2">Starting
-                                    Value</label>
                                 <input id="starting_value" type="number"
                                     class="w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 @error('starting_value') border-red-500 @enderror"
                                     name="starting_value"
@@ -39,25 +37,49 @@
                     </div>
                 </div>
 
-                <div class="bg-white shadow-md rounded-lg">
+                <div class="bg-white shadow-md rounded-lg mb-6">
                     <div class="bg-gray-100 px-6 py-4 border-b">
-                        <h3 class="text-lg font-semibold">Drive Letter</h3>
+                        <h3 class="text-lg font-semibold">Storage</h3>
                     </div>
                     <div class="px-6 py-4">
                         <form method="POST" action="{{ route('update.storage.path') }}">
                             @csrf
                             <div class="mb-4">
-                                <label for="storage_path" class="block text-gray-700 font-medium mb-2">Drive</label>
-                                <select id="storage_path"
+                                <input id="storage_path"
                                     class="w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 @error('storage_path') border-red-500 @enderror"
-                                    name="storage_path" required autofocus>
-                                    @if ($storage)
-                                        <option disabled selected>Current: {{ $storage->path }}</option>
-                                    @else
-                                        <option disabled selected>No storage path set</option>
-                                    @endif
-                                </select>
+                                    type="text" name="storage_path" required autofocus
+                                    value="{{ $storage ? $storage->path : '' }}"
+                                    placeholder="{{ $storage ? $storage->path : 'No storage path set' }}">
                                 @error('storage_path')
+                                    <span class="text-red-500 text-sm mt-1" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                            <div class="flex justify-start">
+                                <button type="submit"
+                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Set
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+                <div class="bg-white shadow-md rounded-lg mb-6">
+                    <div class="bg-gray-100 px-6 py-4 border-b">
+                        <h3 class="text-lg font-semibold">Case Number</h3>
+                    </div>
+                    <div class="px-6 py-4">
+                        <form method="POST" action="{{ route('update.case.number.format') }}">
+                            @csrf
+                            <div class="mb-4">
+                                <input id="case_number_format" type="text"
+                                    class="w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 @error('case_number_format') border-red-500 @enderror"
+                                    name="case_number_format" placeholder="Enter date format (e.g., DD-MM-YYYY)"
+                                    required autocomplete="off">
+                                @error('case_number_format')
                                     <span class="text-red-500 text-sm mt-1" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -75,4 +97,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-app-layout>Z

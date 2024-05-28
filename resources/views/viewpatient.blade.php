@@ -108,6 +108,7 @@
                                         <div class="btn-group" role="group" aria-label="Zip Actions">
                                             <a href="{{ route('zip', $zip->id) }}"
                                                 class="download-link bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">Download</a>
+                                            {{-- PLEASE UPDATE --}}
                                             <a href="{{ route('store.zip', $zip->id) }}"
                                                 class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Archive</a>
                                         </div>

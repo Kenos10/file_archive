@@ -14,6 +14,7 @@ use App\Models\Archive;
 use App\Models\Configuration;
 use App\Models\ZipDirectory;
 use Log;
+use GuzzleHttp\Client;
 
 class ArchiveController extends Controller
 {
@@ -112,43 +113,30 @@ class ArchiveController extends Controller
         return $response;
     }
 
-
+    // PLEASE UPDATE
     public function downloadPath($id)
     {
-        try {
-            $file = Archive::where("id", $id)->firstOrFail();
-            $path = $file->zip;
+        $file = Archive::where('id', $id)->firstOrFail();
+        $localFilePath = public_path($file->zip);
 
-            // Remove the '/storage/' from the beginning of the path
-            $path = str_replace('/storage/', '', $path);
-
-            // Define the target directory (mapped drive)
-            $directory = ZipDirectory::first();
-            $targetDirectory = $directory->path;
-
-            // Get the file contents
-            $absolutePath = storage_path('app/public/' . $path);
-            $contents = file_get_contents($absolutePath);
-
-            // Define the target file path
-            $targetFilePath = $targetDirectory . basename($path);
-
-            // Write the contents to the target file
-            file_put_contents($targetFilePath, $contents);
-
-            // Redirect back with a success message
-            return redirect()->back()->with('success', 'Zip has been saved to ' . $targetFilePath);
-        } catch (\Exception $e) {
-            // Log::error('Failed to save file: ' . $e->getMessage());
-            // Redirect back with an error message
-            return redirect()->back()->withInput()->withErrors(['error' => $e->getMessage()]);
+        if (!file_exists($localFilePath)) {
+            return redirect()->back()->withErrors(['error' => 'File not found.']);
         }
+
+        // Generate a unique filename for the remote file
+        $remoteFilePath = 'uploads/' . basename($localFilePath);
+
+        // Upload the file to the target computer's local IP address
+        Storage::disk('sftp')->put($remoteFilePath, fopen($localFilePath, 'r+'));
+
+        return redirect()->back()->with('success', 'File sent successfully via SFTP');
     }
 
+    // PLEASE UPDATE
     public function updateStoragePath(Request $request)
     {
         $request->validate([
-            'storage_path' => 'required|string',
+            'storage_path' => 'required|string|ip', // Validate IP address format
         ]);
 
         ZipDirectory::updateOrCreate(
@@ -158,6 +146,7 @@ class ArchiveController extends Controller
 
         return redirect()->back()->with('success', 'Storage path updated successfully.');
     }
+
 
 
     public function updateStartingValue(Request $request)
@@ -188,4 +177,17 @@ class ArchiveController extends Controller
         // Return the view with both the starting value and the storage path
         return view('setting', compact('startingValue', 'storage'));
     }
+
+    public function updateCaseNumberFormat(Request $request)
+    {
+        $request->validate([
+            'case_number_format' => 'required|string',
+        ]);
+
+        // Logic to update the case number format in your application
+        // This could involve updating a configuration setting or a model attribute
+
+        return redirect()->back()->with('success', 'Case number format updated successfully.');
+    }
+
 }

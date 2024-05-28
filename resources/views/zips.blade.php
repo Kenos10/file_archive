@@ -20,21 +20,23 @@
         </div>
     </x-slot>
 
-    <div class="mt-4">
-        @if ($message = Session::get('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <strong class="font-bold">{{ $message }}</strong>
-            </div>
-        @endif
-        @if (count($errors) > 0)
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
-                <ul class="list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    <div class="container mx-auto mt-4 w-10/12 ">
+        <div class="alert-container">
+            @if ($message = Session::get('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" role="alert">
+                    <strong>{{ $message }}</strong>
+                </div>
+            @endif
+            @if (count($errors) > 0)
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+        </div>
     </div>
 
     <div class="mt-8 mx-auto w-10/12 overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
