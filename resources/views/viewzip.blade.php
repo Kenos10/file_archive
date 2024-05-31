@@ -87,6 +87,18 @@
             function closeModal(id) {
                 document.getElementById('modal-' + id).classList.add('hidden');
             }
+            window.addEventListener('beforeunload', function(e) {
+                // Make an AJAX request to delete the extracted folder
+                fetch('/delete-extracted-folder')
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error('Failed to delete extracted folder');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            });
         </script>
     </x-slot>
 </x-app-layout>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Number Format</title>
+</head>
+<body>
+  <h2>Case Number Format</h2>
+  <form id="caseNumberForm">
+    <div>
+      <label for="prefix">Prefix:</label>
+      <select id="prefix">
+        <option value="none">None</option>
+        <option value="string">String</option>
+        <option value="date">Date</option>
+      </select>
+      <div id="prefixDetails">
+        <label for="prefixValue">Value:</label>
+        <input type="text" id="prefixValue">
+      </div>
+      <div id="prefixDateDetails">
+        <label for="prefixDate">Starting Date:</label>
+        <input type="date" id="prefixDate">
+        <div>
+          <input type="checkbox" id="prefixYearOnly" value="year">
+          <label for="prefixYearOnly">Year Only</label>
+          <input type="checkbox" id="prefixMonthOnly" value="month">
+          <label for="prefixMonthOnly">Month Only</label>
+          <input type="checkbox" id="prefixDayOnly" value="day">
+          <label for="prefixDayOnly">Day Only</label>
+        </div>
+        <div>
+          <input type="radio" id="prefixFullYear" name="prefixYearFormat" value="full">
+          <label for="prefixFullYear">Full Year (e.g., 2024)</label>
+          <input type="radio" id="prefixShortYear" name="prefixYearFormat" value="short">
+          <label for="prefixShortYear">Short Year (e.g., 24)</label>
+        </div>
+      </div>
+    </div>
+    <div>
+      <label for="suffix">Suffix:</label>
+      <select id="suffix">
+        <option value="none">None</option>
+        <option value="string">String</option>
+        <option value="date">Date</option>
+      </select>
+      <div id="suffixDetails">
+        <label for="suffixValue">Value:</label>
+        <input type="text" id="suffixValue">
+      </div>
+      <div id="suffixDateDetails">
+        <label for="suffixDate">Starting Date:</label>
+        <input type="date" id="suffixDate">
+        <div>
+          <input type="checkbox" id="suffixYearOnly" value="year">
+          <label for="suffixYearOnly">Year Only</label>
+          <input type="checkbox" id="suffixMonthOnly" value="month">
+          <label for="suffixMonthOnly">Month Only</label>
+          <input type="checkbox" id="suffixDayOnly" value="day">
+          <label for="suffixDayOnly">Day Only</label>
+        </div>
+        <div>
+          <input type="radio" id="suffixFullYear" name="suffixYearFormat" value="full">
+          <label for="suffixFullYear">Full Year (e.g., 2024)</label>
+          <input type="radio" id="suffixShortYear" name="suffixYearFormat" value="short">
+          <label for="suffixShortYear">Short Year (e.g., 24)</label>
+        </div>
+      </div>
+    </div>
+    <div>
+      <label for="autoNumber">Autonumber:</label>
+      <input type="checkbox" id="autoNumber">
+      <div id="autoNumberDetails">
+        <label for="starterNumber">Starter Number:</label>
+        <input type="number" id="starterNumber" min="0">
+      </div>
+    </div>
+    <div>
+      <label for="includeHyphens">Include Hyphens:</label>
+      <input type="checkbox" id="includeHyphens">
+    </div>
+    <button type="submit">Generate Case Number</button>
+  </form>
+
+  <h3>Generated Case Number</h3>
+  <p id="generatedCaseNumber"></p>
+
+  <script>
+    // Show or hide prefix details based on selection
+    document.getElementById("prefix").addEventListener("change", function() {
+      var prefixDetails = document.getElementById("prefixDetails");
+      var prefixDateDetails = document.getElementById("prefixDateDetails");
+      if (this.value === "string") {
+        prefixDetails.style.display = "block";
+        prefixDateDetails.style.display = "none";
+      } else if (this.value === "date") {
+        prefixDetails.style.display = "none";
+        prefixDateDetails.style.display = "block";
+      } else {
+        prefixDetails.style.display = "none";
+        prefixDateDetails.style.display = "none";
+      }
+    });
+
+    // Show or hide suffix details based on selection
+    document.getElementById("suffix").addEventListener("change", function() {
+      var suffixDetails = document.getElementById("suffixDetails");
+      var suffixDateDetails = document.getElementById("suffixDateDetails");
+      if (this.value === "string") {
+        suffixDetails.style.display = "block";
+        suffixDateDetails.style.display = "none";
+      } else if (this.value === "date") {
+        suffixDetails.style.display = "none";
+        suffixDateDetails.style.display = "block";
+      } else {
+        suffixDetails.style.display = "none";
+        suffixDateDetails.style.display = "none";
+      }
+    });
+
+    // Show or hide autonumber details based on checkbox state
+    document.getElementById("autoNumber").addEventListener("change", function() {
+      var autoNumberDetails = document.getElementById("autoNumberDetails");
+      if (this.checked) {
+        autoNumberDetails.style.display = "block";
+      } else {
+        autoNumberDetails.style.display = "none";
+      }
+    });
+
+    // Prevent form submission
+    document.getElementById("caseNumberForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      generateCaseNumber();
+    });
+
+    // Generate the case number based on user input
+    function generateCaseNumber() {
+      var prefix = document.getElementById("prefix").value;
+      var suffix = document.getElementById("suffix").value;
+      var prefixValue = document.getElementById("prefixValue").value;
+      var suffixValue = document.getElementById("suffixValue").value;
+      var autoNumber = document.getElementById("autoNumber").checked;
+      var starterNumber = document.getElementById("starterNumber").value;
+      var prefixDate = document.getElementById("prefixDate").value;
+      var suffixDate = document.getElementById("suffixDate").value;
+      var includeHyphens = document.getElementById("includeHyphens").checked;
+      var caseNumber = "";
+
+      if (prefix !== "none") {
+        if (prefix === "string") {
+          caseNumber += prefixValue;
+        } else if (prefix === "date") {
+          caseNumber += formatDate(prefixDate, 'prefix');
+        }
+      }
+
+      if (autoNumber) {
+        caseNumber += (includeHyphens ? "-" : "") + (starterNumber ? starterNumber : "001");
+      }
+
+      if (suffix !== "none") {
+        if (suffix === "string") {
+          caseNumber += (includeHyphens ? "-" : "") + suffixValue;
+        } else if (suffix === "date") {
+          caseNumber += (includeHyphens ? "-" : "") + formatDate(suffixDate, 'suffix');
+        }
+      }
+
+      document.getElementById("generatedCaseNumber").textContent = caseNumber;
+    }
+
+    function formatDate(date, type) {
+      var year = date.slice(0, 4);
+      var month = date.slice(5, 7);
+      var day = date.slice(8, 10);
+      var yearFormat = document.querySelector('input[name="' + type + 'YearFormat"]:checked').value;
+      var formattedDate = "";
+
+      if (document.getElementById(type + 'YearOnly').checked) {
+        formattedDate += (yearFormat === 'short' ? year.slice(2) : year);
+      }
+      if (document.getElementById(type + 'MonthOnly').checked) {
+        formattedDate += (formattedDate && document.getElementById('includeHyphens').checked ? '-' : '') + month;
+      }
+      if (document.getElementById(type + 'DayOnly').checked) {
+        formattedDate += (formattedDate && document.getElementById('includeHyphens').checked ? '-' : '') + day;
+      }
+
+      return formattedDate;
+    }
+  </script>
+</body>
+</html>

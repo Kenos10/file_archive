@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->string('hospitalRecordId')->index()->unique();
             $table->string('caseNo')->unique();
+            $table->string('fileNo')->unique();
             $table->string('password');
             $table->string('firstName');
             $table->string('middleName');

@@ -13,25 +13,32 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="font-bold text-black">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
+                        class="font-semibold text-white hover:text-gray-200 transition ease-in-out duration-150">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('addpatient')" :active="request()->routeIs('addpatient')" class="font-bold text-black">
+                    <x-nav-link :href="route('addpatient')" :active="request()->routeIs('addpatient')"
+                        class="font-semibold text-white hover:text-gray-200 transition ease-in-out duration-150">
                         {{ __('Archive') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('patients.index')" :active="request()->routeIs('patients.index')" class="font-bold text-black">
+                    <x-nav-link :href="route('patients.index')" :active="request()->routeIs('patients.index')"
+                        class="font-semibold text-white hover:text-gray-200 transition ease-in-out duration-150">
                         {{ __('Patients') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('files.index')" :active="request()->routeIs('files.index')" class="font-bold text-black">
+                    <x-nav-link :href="route('files.index')" :active="request()->routeIs('files.index')"
+                        class="font-semibold text-white hover:text-gray-200 transition ease-in-out duration-150">
                         {{ __('Files') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('archives.index')" :active="request()->routeIs('archives.index')" class="font-bold text-black">
+                    <x-nav-link :href="route('archives.index')" :active="request()->routeIs('archives.index')"
+                        class="font-semibold text-white hover:text-gray-200 transition ease-in-out duration-150">
                         {{ __('Zip') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('extract')" :active="request()->routeIs('extract')" class="font-bold text-black">
+                    <x-nav-link :href="route('extract')" :active="request()->routeIs('extract')"
+                        class="font-semibold text-white hover:text-gray-200 transition ease-in-out duration-150">
                         {{ __('Extract') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('setting')" :active="request()->routeIs('setting')" class="font-bold text-black">
+                    <x-nav-link :href="route('setting')" :active="request()->routeIs('setting')"
+                        class="font-semibold text-white hover:text-gray-200 transition ease-in-out duration-150">
                         {{ __('Settings') }}
                     </x-nav-link>
                 </div>

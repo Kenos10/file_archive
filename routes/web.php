@@ -5,6 +5,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\ZipExtractController;
+use App\Http\Controllers\CaseFormatController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -56,7 +57,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/update-storage-path', [ArchiveController::class, 'updateStoragePath'])->name('update.storage.path');
     Route::get('/downloadzip/{id}', [ArchiveController::class, 'download'])->name('zip');
     Route::get('/storezip/{id}', [ArchiveController::class, 'downloadPath'])->name('store.zip');
-    Route::post('/update-case-number-format', [App\Http\Controllers\ArchiveController::class, 'updateCaseNumberFormat'])->name('update.case.number.format');
+
+    Route::post('/case-format', [CaseFormatController::class, 'store']);
 
 
     Route::get('/zip', function () {
@@ -65,6 +67,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/upload_zip', [ZipExtractController::class, 'extractAndListFiles'])->name('upload_zip');
     Route::get('/view_file/{filename}', [ZipExtractController::class, 'viewFile'])->name('view_file')->where('filename', '.*');
+    Route::get('/delete-extracted-folder', [ZipExtractController::class, 'deleteExtractedFolder'])->name('delete.extracted.folder');
 
     Route::resource('archives', ArchiveController::class);
     Route::resource('patients', PatientController::class);

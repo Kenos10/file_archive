@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
+use Illuminate\Support\Facades\File;
 
 class ZipExtractController extends Controller
 {
@@ -34,6 +35,9 @@ class ZipExtractController extends Controller
             $zip->extractTo($extractPath);
             $zip->close();
 
+            // Delete the uploaded zip file after extraction
+            Storage::delete($path);
+
             $files = array_diff(scandir($extractPath), array('.', '..'));
 
             $filepaths = [];
@@ -56,5 +60,14 @@ class ZipExtractController extends Controller
         }
 
         abort(404);
+    }
+
+    public function deleteExtractedFolder()
+    {
+        $extractedPath = storage_path('app/extracted');
+        // Delete the extracted folder and its contents
+        if (File::exists($extractedPath)) {
+            File::deleteDirectory($extractedPath);
+        }
     }
 }

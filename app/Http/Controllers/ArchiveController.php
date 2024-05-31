@@ -12,6 +12,7 @@ use App\Models\Patient;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\Archive;
 use App\Models\Configuration;
+use App\Models\CaseFormat;
 use App\Models\ZipDirectory;
 use Log;
 use GuzzleHttp\Client;
@@ -123,8 +124,8 @@ class ArchiveController extends Controller
             return redirect()->back()->withErrors(['error' => 'File not found.']);
         }
 
-        // Generate a unique filename for the remote file
-        $remoteFilePath = 'uploads/' . basename($localFilePath);
+        // Specify the full remote file path including the filename
+        $remoteFilePath = '/storage/emulated/0/' . basename($localFilePath);
 
         // Upload the file to the target computer's local IP address
         Storage::disk('sftp')->put($remoteFilePath, fopen($localFilePath, 'r+'));
@@ -177,17 +178,4 @@ class ArchiveController extends Controller
         // Return the view with both the starting value and the storage path
         return view('setting', compact('startingValue', 'storage'));
     }
-
-    public function updateCaseNumberFormat(Request $request)
-    {
-        $request->validate([
-            'case_number_format' => 'required|string',
-        ]);
-
-        // Logic to update the case number format in your application
-        // This could involve updating a configuration setting or a model attribute
-
-        return redirect()->back()->with('success', 'Case number format updated successfully.');
-    }
-
 }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
-
 use App\Models\File;
 
 class FileController extends Controller
@@ -15,8 +14,8 @@ class FileController extends Controller
     {
         $search = $request->get('search');
         $files = File::where('hospitalRecordId', 'like', '%' . $search . '%')
-            ->orWhere('fileNo', 'like', '%' . $search . '%')
-            ->orderByDesc('fileNo')
+            ->orWhere('file', 'like', '%' . $search . '%')
+            ->orderByDesc('id')
             ->paginate(8);
         return view('files', compact('files'));
     }
@@ -29,15 +28,13 @@ class FileController extends Controller
             'file' => 'required|mimes:jpeg,png,png,csv,txt,xlsx,xls,ppt,pptx,doc,docx,pdf|max:5048',
         ]);
 
-        // Generate a unique file number
         $fileModel = new File;
-        $fileNo = $fileModel->generateFileNo();
 
         if ($request->file()) {
             // Get the original file name
             $originalFileName = $request->file->getClientOriginalName();
             // Create a new file name with the file number prefixed
-            $fileName = $fileNo . '_' . $originalFileName;
+            $fileName = $originalFileName;
             // Store the file in the 'uploads' directory under 'public' disk
             $filePath = $request->file('file')->storeAs('uploads', $fileName, 'public');
 
@@ -53,7 +50,6 @@ class FileController extends Controller
             // Save file information to the database
             $fileModel->file = '/storage/' . $filePath;
             $fileModel->hospitalRecordId = $request->input('hospitalRecordId');
-            $fileModel->fileNo = $fileNo;
             $fileModel->save();
 
             // Return a success response

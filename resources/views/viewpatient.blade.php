@@ -26,6 +26,7 @@
                 <p class="text-gray-700">
                     <strong>Hospital Record ID:</strong> {{ $patient->hospitalRecordId }}<br>
                     <strong>Case No:</strong> {{ $patient->caseNo }}<br>
+                    <strong>File No:</strong> {{ $patient->fileNo }}<br>
                     <strong>Date of Birth:</strong> {{ $patient->dateOfBirth }}<br>
                     <strong>Zip Password:</strong> {{ $decryptedPassword }}
                 </p>
@@ -68,7 +69,7 @@
                                     Select</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    File No</th>
+                                    File</th>
                             </tr>
                         </thead>
                         <tbody class="align-middle">
@@ -76,7 +77,7 @@
                                 <tr>
                                     <td class="px-4 py-2"><input type="checkbox" name="files[]"
                                             value="{{ $file->id }}"></td>
-                                    <td class="px-4 py-2">{{ $file->fileNo }}</td>
+                                    <td class="px-4 py-2">{{ $file->file }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->id();
             $table->timestamps();
             $table->string('file');
-            $table->string('fileNo');
             $table->string('hospitalRecordId');
             $table->foreign('hospitalRecordId')->references('hospitalRecordId')->on('patients');
         });

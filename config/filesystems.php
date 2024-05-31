@@ -58,15 +58,22 @@ return [
 
         'sftp' => [
             'driver' => 'sftp',
-            'host' => '192.168.1.78', // Target computer's IP address
-            'username' => 'your_username',
-            'password' => 'your_password', // or use 'privateKey' for SSH key
-
-            // Optional settings
-            // 'privateKey' => '/path/to/privateKey',
-            'port' => 22,
-            'root' => '/path/to/root', // Remote directory
+            'host' => env('SFTP_HOST', '192.168.1.89'),
+            'username' => env('SFTP_USERNAME', 'bob'),
+            'password' => env('SFTP_PASSWORD', '12345'),
+            'port' => (int) env('SFTP_PORT', 2222),
+            'root' => env('SFTP_ROOT', '/storage/emulated/0'),
             'timeout' => 30,
+            // 'driver' => 'sftp',
+            // 'host' => '192.168.1.89', // Target computer's IP address
+            // 'username' => 'bob',
+            // 'password' => '12345', // or use 'privateKey' for SSH key
+
+            // // Optional settings
+            // // 'privateKey' => '/path/to/privateKey',
+            // 'port' => 2222,
+            // 'root' => '/storage/emulated/0', // Remote directory
+            // 'timeout' => 30,
         ],
 
     ],
