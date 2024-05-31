@@ -10,16 +10,14 @@ class CaseFormatController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'prefix' => 'required|string', // Assuming prefix is required to find/update the record
+            'prefix' => 'required|string',
             'prefix_value' => 'nullable|string',
-            'prefix_date' => 'nullable|date',
             'prefix_year_format' => 'nullable|in:full,short',
             'prefix_year_only' => 'boolean',
             'prefix_month_only' => 'boolean',
             'prefix_day_only' => 'boolean',
             'suffix' => 'nullable|string',
             'suffix_value' => 'nullable|string',
-            'suffix_date' => 'nullable|date',
             'suffix_year_format' => 'nullable|in:full,short',
             'suffix_year_only' => 'boolean',
             'suffix_month_only' => 'boolean',

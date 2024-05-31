@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
-use App\Models\CaseFormat;
+use Carbon\Carbon;
 
 class Patient extends Model
 {
@@ -28,15 +28,11 @@ class Patient extends Model
         parent::boot();
 
         static::creating(function ($patient) {
-            // Set fileNo as before
             $patient->fileNo = $patient->generateFileNo();
-
-            // Generate and set the caseNo based on the CaseFormat
             $patient->caseNo = CaseFormat::getNextCaseNo();
         });
 
         static::created(function ($patient) {
-            // Increment the auto-number in CaseFormat after patient record is created
             CaseFormat::incrementAutoNumber();
         });
     }
@@ -48,7 +44,7 @@ class Patient extends Model
         $lastFile = static::orderBy('fileNo', 'desc')->first();
         $startingValue = Configuration::where('key', 'filenumber.starting_value')->value('value');
 
-        $nextFileNo = intval($startingValue); // Default to starting value
+        $nextFileNo = intval($startingValue);
 
         if ($lastFile && $lastFile->fileNo) {
             $lastFileNo = intval(substr($lastFile->fileNo, 4));

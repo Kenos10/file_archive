@@ -105,9 +105,6 @@
                                     class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                             </div>
                             <div id="prefixDateDetails" class="mb-4 hidden">
-                                <label for="prefixDate" class="block text-gray-700">Starting Date:</label>
-                                <input type="date" id="prefixDate" name="prefix_date"
-                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                                 <div class="mt-2">
                                     <div>
                                         <input type="checkbox" id="prefixYearOnly" name="prefix_year_only"
@@ -155,9 +152,6 @@
                                     class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                             </div>
                             <div id="suffixDateDetails" class="mb-4 hidden">
-                                <label for="suffixDate" class="block text-gray-700">Starting Date:</label>
-                                <input type="date" id="suffixDate" name="suffix_date"
-                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                                 <div class="mt-2">
                                     <div>
                                         <input type="checkbox" id="suffixYearOnly" name="suffix_year_only"
@@ -286,4 +280,5 @@
                         }
                     </script>
                 </x-slot>
+
 </x-app-layout>
