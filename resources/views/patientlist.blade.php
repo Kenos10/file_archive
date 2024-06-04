@@ -20,7 +20,7 @@
         </div>
     </x-slot>
 
-    <div class="mt-8 mx-auto w-10/12 overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+    <div class="mt-8 mx-auto w-full overflow-x-auto shadow-md rounded-lg">
         <table class="min-w-full divide-y divide-gray-300">
             <thead class="bg-gray-50">
                 <tr>
