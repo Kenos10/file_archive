@@ -25,7 +25,7 @@ class FileController extends Controller
         // Validate the incoming request
         $request->validate([
             'hospitalRecordId' => 'required',
-            'file' => 'required|mimes:jpeg,png,png,csv,txt,xlsx,xls,ppt,pptx,doc,docx,pdf|max:5048',
+            'file' => 'required|mimes:jpeg,png,csv,txt,xlsx,xls,ppt,pptx,doc,docx,pdf|max:5048',
         ]);
 
         $fileModel = new File;
@@ -33,7 +33,7 @@ class FileController extends Controller
         if ($request->file()) {
             // Get the original file name
             $originalFileName = $request->file->getClientOriginalName();
-            // Create a new file name with the file number prefixed
+            // Create a new file name with the original file name
             $fileName = $originalFileName;
             // Store the file in the 'uploads' directory under 'public' disk
             $filePath = $request->file('file')->storeAs('uploads', $fileName, 'public');
@@ -49,6 +49,7 @@ class FileController extends Controller
 
             // Save file information to the database
             $fileModel->file = '/storage/' . $filePath;
+            $fileModel->fileName = $fileName; // Save the original file name
             $fileModel->hospitalRecordId = $request->input('hospitalRecordId');
             $fileModel->save();
 
@@ -59,4 +60,5 @@ class FileController extends Controller
         // Return an error response if the file upload fails
         return redirect()->route('pages.viewpatientlist')->with('error', 'File upload failed.');
     }
+
 }

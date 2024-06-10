@@ -77,7 +77,7 @@
                                 <tr>
                                     <td class="px-4 py-2"><input type="checkbox" name="files[]"
                                             value="{{ $file->id }}"></td>
-                                    <td class="px-4 py-2">{{ $file->file }}</td>
+                                    <td class="px-4 py-2">{{ $file->fileName }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

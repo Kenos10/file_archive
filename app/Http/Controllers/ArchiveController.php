@@ -186,15 +186,9 @@ class ArchiveController extends Controller
 
     public function setting()
     {
-        // Fetch the starting value configuration
-        $starting = Configuration::firstWhere('key', 'filenumber.starting_value');
-
-        // Check if $starting is null
-        $startingValue = $starting ? $starting->value : null;
-
         $storage = ZipDirectory::all()->first();
 
         // Return the view with both the starting value and the storage path
-        return view('setting', compact('startingValue', 'storage'));
+        return view('setting', compact('storage'));
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Patient;
 use App\Models\File;
 use Illuminate\Support\Str;
 use App\Models\CaseFormat;
+use App\Models\FileFormat;
 
 class PatientController extends Controller
 {
@@ -40,7 +41,6 @@ class PatientController extends Controller
         return view('viewpatient', compact('patient', 'files', 'zipfile', 'decryptedPassword'));
     }
 
-
     // Store a newly created resource in storage.
     public function store(Request $request)
     {
@@ -57,40 +57,46 @@ class PatientController extends Controller
         $password = Str::random(8);
         $encryptedPassword = encrypt($password);
 
-        // Get the case format for generating the case number
-        $caseFormat = CaseFormat::first(); // Fetch the case format based on your logic
+        // Get the next case number
+        $caseNo = CaseFormat::getNextCaseNo();
 
-        // Check if case format exists
-        if (!$caseFormat) {
-            return redirect()->back()->withErrors(['error' => 'Please set CaseNo in settings.']);
+        // Check if the case number already exists
+        $existingPatient = Patient::where('caseNo', $caseNo)->first();
+
+        if ($existingPatient) {
+            // Retrieve the existing file number associated with the case number
+            $fileNo = $existingPatient->fileNo;
+        } else {
+            // Generate a new file number if the case number doesn't exist
+            $fileNo = FileFormat::getNextFileNo();
+
+            // Check if the generated file number already exists
+            while (Patient::where('fileNo', $fileNo)->exists()) {
+                $fileNo = FileFormat::getNextFileNo(); // Generate a new file number
+            }
         }
-
-        // Ensure the next available starter number is unique
-        $starterNumber = $this->getNextAvailableStarterNumber($caseFormat->starter_number);
-
-        // Generate the case number
-        $caseNo = $this->generateCaseNumber($caseFormat, $starterNumber);
-
-        // Check if case number is set
-        if (!$caseNo) {
-            return redirect()->back()->withErrors(['error' => 'Please set CaseNo in settings.']);
-        }
-
-        $patient = new Patient;
-        $fileNo = $patient->generateFileNo();
 
         // Create a new Patient record
+        $patient = new Patient();
         $patient->fill([
             'hospitalRecordId' => $validatedData['hospitalRecordId'],
             'caseNo' => $caseNo,
+            'fileNo' => $fileNo,
             'firstName' => $validatedData['firstName'],
             'middleName' => $validatedData['middleName'],
             'lastName' => $validatedData['lastName'],
             'dateOfBirth' => $validatedData['dateOfBirth'],
             'password' => $encryptedPassword,
-            'fileNo' => $fileNo,
         ]);
         $patient->save();
+
+        // Increment the starter number after inserting the patient record
+        CaseFormat::incrementAutoNumber();
+
+        // Update the starter number in file_format
+        $fileFormat = FileFormat::first();
+        $fileFormat->starter_number = CaseFormat::first()->starter_number;
+        $fileFormat->save();
 
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Patient created successfully.');
@@ -103,12 +109,13 @@ class PatientController extends Controller
 
         // If the current starter number exists, increment it until a unique one is found
         if ($existingPatient) {
-            $nextStarterNumber = $currentStarterNumber + 1;
+            $nextStarterNumber = (int) $currentStarterNumber + 1; // Cast $currentStarterNumber to integer
             return $this->getNextAvailableStarterNumber($nextStarterNumber);
         }
 
         return $currentStarterNumber;
     }
+
     private function generateCaseNumber($caseFormat, $starterNumber)
     {
         $caseNo = '';
@@ -165,5 +172,4 @@ class PatientController extends Controller
 
         return $formattedDate;
     }
-
 }

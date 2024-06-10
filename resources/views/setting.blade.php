@@ -28,25 +28,124 @@
             <div class="w-full lg:max-w-2xl">
                 <div class="bg-white shadow-md rounded-lg mb-6">
                     <div class="bg-gray-100 px-6 py-4 border-b">
-                        <h3 class="text-lg font-semibold">File Sequence Number</h3>
+                        <h3 class="text-lg font-semibold">File Number</h3>
                     </div>
                     <div class="px-6 py-4">
-                        <form method="POST" action="{{ route('update.starting.value') }}">
+                        <form id="fileNumberForm" method="POST" action="/file-format">
                             @csrf
                             <div class="mb-4">
-                                <input id="starting_value" type="number" name="starting_value" class="w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 @error('starting_value') border-red-500 @enderror" placeholder="{{ $startingValue ? 'Current: ' . $startingValue : 'No starting value set' }}" required autocomplete="starting_value" autofocus>
-                                @error('starting_value')
-                                    <span class="text-red-500 text-sm mt-1" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <label for="prefix" class="block text-gray-700">Prefix:</label>
+                                <select id="prefix" name="prefix"
+                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                                    <option value="none">None</option>
+                                    <option value="string">String</option>
+                                    <option value="date">Date</option>
+                                </select>
                             </div>
-                            <div class="flex justify-start">
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Set</button>
+                            <div id="prefixDetails" class="mb-4 hidden">
+                                <label for="prefixValue" class="block text-gray-700">Value:</label>
+                                <input type="text" id="prefixValue" name="prefix_value"
+                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                             </div>
+                            <div id="prefixDateDetails" class="mb-4 hidden">
+                                <div class="mt-2">
+                                    <div>
+                                        <input type="checkbox" id="prefixYearOnly" name="prefix_year_only"
+                                            value="1" class="mr-1">
+                                        <label for="prefixYearOnly" class="text-gray-700">Year Only</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="prefixMonthOnly" name="prefix_month_only"
+                                            value="1" class="mr-1">
+                                        <label for="prefixMonthOnly" class="text-gray-700">Month Only</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="prefixDayOnly" name="prefix_day_only" value="1"
+                                            class="mr-1">
+                                        <label for="prefixDayOnly" class="text-gray-700">Day Only</label>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <div>
+                                        <input type="radio" id="prefixFullYear" name="prefix_year_format"
+                                            value="full" class="mr-1">
+                                        <label for="prefixFullYear" class="text-gray-700">Full Year (e.g., 2024)</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" id="prefixShortYear" name="prefix_year_format"
+                                            value="short" class="mr-1">
+                                        <label for="prefixShortYear" class="text-gray-700">Short Year (e.g., 24)</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="suffix" class="block text-gray-700">Suffix:</label>
+                                <select id="suffix" name="suffix"
+                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                                    <option value="none">None</option>
+                                    <option value="string">String</option>
+                                    <option value="date">Date</option>
+                                </select>
+                            </div>
+                            <div id="suffixDetails" class="mb-4 hidden">
+                                <label for="suffixValue" class="block text-gray-700">Value:</label>
+                                <input type="text" id="suffixValue" name="suffix_value"
+                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                            </div>
+                            <div id="suffixDateDetails" class="mb-4 hidden">
+                                <div class="mt-2">
+                                    <div>
+                                        <input type="checkbox" id="suffixYearOnly" name="suffix_year_only"
+                                            value="1" class="mr-1">
+                                        <label for="suffixYearOnly" class="text-gray-700">Year Only</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="suffixMonthOnly" name="suffix_month_only"
+                                            value="1" class="mr-1">
+                                        <label for="suffixMonthOnly" class="text-gray-700">Month Only</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="suffixDayOnly" name="suffix_day_only"
+                                            value="1" class="mr-1">
+                                        <label for="suffixDayOnly" class="text-gray-700">Day Only</label>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <div>
+                                        <input type="radio" id="suffixFullYear" name="suffix_year_format"
+                                            value="full" class="mr-1">
+                                        <label for="suffixFullYear" class="text-gray-700">Full Year (e.g.,
+                                            2024)</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" id="suffixShortYear" name="suffix_year_format"
+                                            value="short" class="mr-1">
+                                        <label for="suffixShortYear" class="text-gray-700">Short Year (e.g.,
+                                            24)</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="autoNumber" class="block text-gray-700">Auto Number:</label>
+                                <input type="hidden" name="auto_number" value="0"> <!-- Add this line -->
+                                <input type="checkbox" id="autoNumber" name="auto_number" value="1"
+                                    class="mr-2 leading-tight">
+                            </div>
+                            <div id="starterNumberDetails" class="mb-4 hidden">
+                                <label for="starterNumber" class="block text-gray-700">Starter Number:</label>
+                                <input type="number" id="starterNumber" name="starter_number"
+                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                            </div>
+                            <div class="mb-4">
+                                <label for="includeHyphens" class="block text-gray-700">Include Hyphens:</label>
+                                <input type="checkbox" id="includeHyphens" name="include_hyphens"
+                                    class="mr-2 leading-tight">
+                            </div>
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md">Save</button>
                         </form>
                     </div>
                 </div>
+
 
                 <!-- Storage -->
                 <div class="bg-white shadow-md rounded-lg mb-6">
@@ -57,7 +156,11 @@
                         <form method="POST" action="{{ route('update.storage.path') }}">
                             @csrf
                             <div class="mb-4">
-                                <input id="storage_path" type="text" name="storage_path" class="w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 @error('storage_path') border-red-500 @enderror" value="{{ $storage ? $storage->path : '' }}" placeholder="{{ $storage ? $storage->path : 'No storage path set' }}" required autofocus>
+                                <input id="storage_path" type="text" name="storage_path"
+                                    class="w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 @error('storage_path') border-red-500 @enderror"
+                                    value="{{ $storage ? $storage->path : '' }}"
+                                    placeholder="{{ $storage ? $storage->path : 'No storage path set' }}" required
+                                    autofocus>
                                 @error('storage_path')
                                     <span class="text-red-500 text-sm mt-1" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -65,7 +168,8 @@
                                 @enderror
                             </div>
                             <div class="flex justify-start">
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Set</button>
+                                <button type="submit"
+                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Set</button>
                             </div>
                         </form>
                     </div>
@@ -80,99 +184,122 @@
                         <form id="caseNumberForm" method="POST" action="/case-format">
                             @csrf
                             <div class="mb-4">
-                                <label for="prefix" class="block text-gray-700">Prefix:</label>
-                                <select id="prefix" name="prefix" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                                <label for="casePrefix" class="block text-gray-700">Prefix:</label>
+                                <select id="casePrefix" name="prefix"
+                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                                     <option value="none">None</option>
                                     <option value="string">String</option>
                                     <option value="date">Date</option>
                                 </select>
                             </div>
-                            <div id="prefixDetails" class="mb-4 hidden">
-                                <label for="prefixValue" class="block text-gray-700">Value:</label>
-                                <input type="text" id="prefixValue" name="prefix_value" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                            <div id="casePrefixDetails" class="mb-4 hidden">
+                                <label for="casePrefixValue" class="block text-gray-700">Value:</label>
+                                <input type="text" id="casePrefixValue" name="prefix_value"
+                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                             </div>
-                            <div id="prefixDateDetails" class="mb-4 hidden">
+                            <div id="casePrefixDateDetails" class="mb-4 hidden">
                                 <div class="mt-2">
                                     <div>
-                                        <input type="checkbox" id="prefixYearOnly" name="prefix_year_only" value="1" class="mr-1">
-                                        <label for="prefixYearOnly" class="text-gray-700">Year Only</label>
+                                        <input type="checkbox" id="casePrefixYearOnly" name="prefix_year_only"
+                                            value="1" class="mr-1">
+                                        <label for="casePrefixYearOnly" class="text-gray-700">Year Only</label>
                                     </div>
                                     <div>
-                                        <input type="checkbox" id="prefixMonthOnly" name="prefix_month_only" value="1" class="mr-1">
-                                        <label for="prefixMonthOnly" class="text-gray-700">Month Only</label>
+                                        <input type="checkbox" id="casePrefixMonthOnly" name="prefix_month_only"
+                                            value="1" class="mr-1">
+                                        <label for="casePrefixMonthOnly" class="text-gray-700">Month Only</label>
                                     </div>
                                     <div>
-                                        <input type="checkbox" id="prefixDayOnly" name="prefix_day_only" value="1" class="mr-1">
-                                        <label for="prefixDayOnly" class="text-gray-700">Day Only</label>
+                                        <input type="checkbox" id="casePrefixDayOnly" name="prefix_day_only"
+                                            value="1" class="mr-1">
+                                        <label for="casePrefixDayOnly" class="text-gray-700">Day Only</label>
                                     </div>
                                 </div>
                                 <div class="mt-2">
                                     <div>
-                                        <input type="radio" id="prefixFullYear" name="prefix_year_format" value="full" class="mr-1">
-                                        <label for="prefixFullYear" class="text-gray-700">Full Year (e.g., 2024)</label>
+                                        <input type="radio" id="casePrefixFullYear" name="prefix_year_format"
+                                            value="full" class="mr-1">
+                                        <label for="casePrefixFullYear" class="text-gray-700">Full Year (e.g.,
+                                            2024)</label>
                                     </div>
                                     <div>
-                                        <input type="radio" id="prefixShortYear" name="prefix_year_format" value="short" class="mr-1">
-                                        <label for="prefixShortYear" class="text-gray-700">Short Year (e.g., 24)</label>
+                                        <input type="radio" id="casePrefixShortYear" name="prefix_year_format"
+                                            value="short" class="mr-1">
+                                        <label for="casePrefixShortYear" class="text-gray-700">Short Year (e.g.,
+                                            24)</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="mb-4">
-                                <label for="suffix" class="block text-gray-700">Suffix:</label>
-                                <select id="suffix" name="suffix" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                                <label for="caseSuffix" class="block text-gray-700">Suffix:</label>
+                                <select id="caseSuffix" name="suffix"
+                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                                     <option value="none">None</option>
                                     <option value="string">String</option>
                                     <option value="date">Date</option>
                                 </select>
                             </div>
-                            <div id="suffixDetails" class="mb-4 hidden">
-                                <label for="suffixValue" class="block text-gray-700">Value:</label>
-                                <input type="text" id="suffixValue" name="suffix_value" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                            <div id="caseSuffixDetails" class="mb-4 hidden">
+                                <label for="caseSuffixValue" class="block text-gray-700">Value:</label>
+                                <input type="text" id="caseSuffixValue" name="suffix_value"
+                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                             </div>
-                            <div id="suffixDateDetails" class="mb-4 hidden">
+                            <div id="caseSuffixDateDetails" class="mb-4 hidden">
                                 <div class="mt-2">
                                     <div>
-                                        <input type="checkbox" id="suffixYearOnly" name="suffix_year_only" value="1" class="mr-1">
-                                        <label for="suffixYearOnly" class="text-gray-700">Year Only</label>
+                                        <input type="checkbox" id="caseSuffixYearOnly" name="suffix_year_only"
+                                            value="1" class="mr-1">
+                                        <label for="caseSuffixYearOnly" class="text-gray-700">Year Only</label>
                                     </div>
                                     <div>
-                                        <input type="checkbox" id="suffixMonthOnly" name="suffix_month_only" value="1" class="mr-1">
-                                        <label for="suffixMonthOnly" class="text-gray-700">Month Only</label>
+                                        <input type="checkbox" id="caseSuffixMonthOnly" name="suffix_month_only"
+                                            value="1" class="mr-1">
+                                        <label for="caseSuffixMonthOnly" class="text-gray-700">Month Only</label>
                                     </div>
                                     <div>
-                                        <input type="checkbox" id="suffixDayOnly" name="suffix_day_only" value="1" class="mr-1">
-                                        <label for="suffixDayOnly" class="text-gray-700">Day Only</label>
+                                        <input type="checkbox" id="caseSuffixDayOnly" name="suffix_day_only"
+                                            value="1" class="mr-1">
+                                        <label for="caseSuffixDayOnly" class="text-gray-700">Day Only</label>
                                     </div>
                                 </div>
                                 <div class="mt-2">
                                     <div>
-                                        <input type="radio" id="suffixFullYear" name="suffix_year_format" value="full" class="mr-1">
-                                        <label for="suffixFullYear" class="text-gray-700">Full Year (e.g., 2024)</label>
+                                        <input type="radio" id="caseSuffixFullYear" name="suffix_year_format"
+                                            value="full" class="mr-1">
+                                        <label for="caseSuffixFullYear" class="text-gray-700">Full Year (e.g.,
+                                            2024)</label>
                                     </div>
                                     <div>
-                                        <input type="radio" id="suffixShortYear" name="suffix_year_format" value="short" class="mr-1">
-                                        <label for="suffixShortYear" class="text-gray-700">Short Year (e.g., 24)</label>
+                                        <input type="radio" id="caseSuffixShortYear" name="suffix_year_format"
+                                            value="short" class="mr-1">
+                                        <label for="caseSuffixShortYear" class="text-gray-700">Short Year (e.g.,
+                                            24)</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <div class="flex items-center">
-                                    <input type="checkbox" id="autoNumber" name="auto_number" value="1" class="mr-2">
-                                    <label for="autoNumber" class="text-gray-700">Autonumber</label>
+                                    <input type="checkbox" id="caseAutoNumber" name="auto_number" value="1"
+                                        class="mr-2">
+                                    <label for="caseAutoNumber" class="text-gray-700">Autonumber</label>
                                 </div>
-                                <div id="autoNumberDetails" class="mt-2 hidden">
-                                    <label for="starterNumber" class="block text-gray-700">Starter Number:</label>
-                                    <input type="number" id="starterNumber" name="starter_number" min="0" class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                                <div id="caseAutoNumberDetails" class="mt-2 hidden">
+                                    <label for="caseStarterNumber" class="block text-gray-700">Starter Number:</label>
+                                    <input type="number" id="caseStarterNumber" name="starter_number"
+                                        min="0"
+                                        class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                                 </div>
                             </div>
                             <div class="mb-4">
                                 <div class="flex items-center">
-                                    <input type="checkbox" id="includeHyphens" name="include_hyphens" value="1" class="mr-2">
-                                    <label for="includeHyphens" class="text-gray-700">Include Hyphens</label>
+                                    <input type="checkbox" id="caseIncludeHyphens" name="include_hyphens"
+                                        value="1" class="mr-2">
+                                    <label for="caseIncludeHyphens" class="text-gray-700">Include Hyphens</label>
                                 </div>
                             </div>
                             <div class="flex justify-start mb-2">
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
+                                <button type="submit"
+                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
                             </div>
                         </form>
                     </div>
@@ -201,14 +328,19 @@
                             toggleVisibility(document.getElementById("prefix"), "prefixDetails", "prefixDateDetails");
                             toggleVisibility(document.getElementById("suffix"), "suffixDetails", "suffixDateDetails");
 
-                            document.getElementById("autoNumber").addEventListener("change", function() {
-                                const autoNumberDetails = document.getElementById("autoNumberDetails");
+                            toggleVisibility(document.getElementById("casePrefix"), "casePrefixDetails", "casePrefixDateDetails");
+                            toggleVisibility(document.getElementById("caseSuffix"), "caseSuffixDetails", "caseSuffixDateDetails");
+
+                            const autoNumber = document.getElementById("autoNumber");
+                            const autoNumberDetails = document.getElementById("starterNumberDetails");
+                            autoNumber.addEventListener("change", function() {
                                 autoNumberDetails.classList.toggle("hidden", !this.checked);
                             });
 
-                            document.getElementById("caseNumberForm").addEventListener("submit", function(event) {
-                                event.preventDefault();
-                                this.submit();
+                            const caseAutoNumber = document.getElementById("caseAutoNumber");
+                            const caseAutoNumberDetails = document.getElementById("caseAutoNumberDetails");
+                            caseAutoNumber.addEventListener("change", function() {
+                                caseAutoNumberDetails.classList.toggle("hidden", !this.checked);
                             });
                         });
 

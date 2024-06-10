@@ -13,6 +13,7 @@ class File extends Model
     protected $fillable = [
         'hospitalRecordId',
         'file',
+        'fileName',
     ];
 
     public function patient(): BelongsTo

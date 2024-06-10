@@ -6,6 +6,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\ZipExtractController;
 use App\Http\Controllers\CaseFormatController;
+use App\Http\Controllers\FileFormatController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -60,7 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/storezip/{id}', [ArchiveController::class, 'downloadPath'])->name('store.zip');
 
     Route::post('/case-format', [CaseFormatController::class, 'store']);
-
+    Route::post('/file-format', [FileFormatController::class, 'store']);
 
     Route::get('/zip', function () {
         return view('zip');
