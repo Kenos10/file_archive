@@ -59,7 +59,7 @@ return [
         'sftp' => [
             'driver' => 'sftp',
             'host' => env('SFTP_HOST', '192.168.1.89'),
-            'username' => env('SFTP_USERNAME', 'bob'),
+            'username' => env('SFTP_USERNAME', 'test'),
             'password' => env('SFTP_PASSWORD', '12345'),
             'port' => (int) env('SFTP_PORT', 2222),
             'root' => env('SFTP_ROOT', '/storage/emulated/0'),

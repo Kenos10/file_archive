@@ -46,11 +46,11 @@ class PatientController extends Controller
     {
         // Validate the request data
         $validatedData = $request->validate([
-            'hospitalRecordId' => 'required|unique:patients',
-            'firstName' => 'required',
-            'middleName' => 'required',
-            'lastName' => 'required',
-            'dateOfBirth' => 'required',
+            'hospitalRecordId' => 'required|numeric|digits:8|unique:patients',
+            'firstName' => 'required|string',
+            'middleName' => 'required|string',
+            'lastName' => 'required|string',
+            'dateOfBirth' => 'required|date',
         ]);
 
         // Generate a random password
@@ -60,11 +60,21 @@ class PatientController extends Controller
         // Get the case format for generating the case number
         $caseFormat = CaseFormat::first(); // Fetch the case format based on your logic
 
+        // Check if case format exists
+        if (!$caseFormat) {
+            return redirect()->back()->withErrors(['error' => 'Please set CaseNo in settings.']);
+        }
+
         // Ensure the next available starter number is unique
         $starterNumber = $this->getNextAvailableStarterNumber($caseFormat->starter_number);
 
         // Generate the case number
         $caseNo = $this->generateCaseNumber($caseFormat, $starterNumber);
+
+        // Check if case number is set
+        if (!$caseNo) {
+            return redirect()->back()->withErrors(['error' => 'Please set CaseNo in settings.']);
+        }
 
         $patient = new Patient;
         $fileNo = $patient->generateFileNo();

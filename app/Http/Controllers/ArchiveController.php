@@ -15,7 +15,10 @@ use App\Models\Configuration;
 use App\Models\CaseFormat;
 use App\Models\ZipDirectory;
 use Log;
-use GuzzleHttp\Client;
+use Exception;
+use Illuminate\Support\Facades\Redirect;
+use phpseclib3\Crypt\RSA;  // Updated namespace
+use phpseclib3\Net\SFTP;   // Updated namespace
 
 class ArchiveController extends Controller
 {
@@ -114,26 +117,44 @@ class ArchiveController extends Controller
         return $response;
     }
 
-    // PLEASE UPDATE
     public function downloadPath($id)
     {
-        $file = Archive::where('id', $id)->firstOrFail();
+        $file = Archive::findOrFail($id);
         $localFilePath = public_path($file->zip);
 
-        if (!file_exists($localFilePath)) {
-            return redirect()->back()->withErrors(['error' => 'File not found.']);
+        if (!File::exists($localFilePath)) {
+            return Redirect::back()->withErrors(['error' => 'File not found.']);
         }
 
-        // Specify the full remote file path including the filename
-        $remoteFilePath = '/storage/emulated/0/' . basename($localFilePath);
+        $targetIpAddress = '192.168.1.89';
+        $username = 'test';
+        $password = '12345';
 
-        // Upload the file to the target computer's local IP address
-        Storage::disk('sftp')->put($remoteFilePath, fopen($localFilePath, 'r+'));
+        try {
+            $sftp = new \phpseclib3\Net\SFTP($targetIpAddress, 2222);
 
-        return redirect()->back()->with('success', 'File sent successfully via SFTP');
+            $sftp->sendKEXINITLast(); // Send KEXINIT last for compatibility
+            $sftp->setTimeout(0); // Disable timeout
+            $sftp->setKeepAlive(5); // Set keep-alive interval
+            $sftp->enableDatePreservation(); // Preserve timestamps
+
+            if (!$sftp->login($username, $password)) {
+                throw new Exception('SFTP login failed.');
+            }
+
+            $remoteDirectory = '/storage/emulated/0';
+            $remoteFileName = basename($localFilePath);
+
+            if (!$sftp->put($remoteDirectory . $remoteFileName, $localFilePath, \phpseclib3\Net\SFTP::SOURCE_LOCAL_FILE)) {
+                throw new Exception('Failed to send file via SFTP.');
+            }
+
+            return Redirect::back()->with('success', 'File sent successfully via SFTP.');
+        } catch (\Exception $e) {
+            return Redirect::back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 
-    // PLEASE UPDATE
     public function updateStoragePath(Request $request)
     {
         $request->validate([
@@ -147,8 +168,6 @@ class ArchiveController extends Controller
 
         return redirect()->back()->with('success', 'Storage path updated successfully.');
     }
-
-
 
     public function updateStartingValue(Request $request)
     {

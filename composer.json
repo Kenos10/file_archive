@@ -13,7 +13,8 @@
         "laravel/tinker": "^2.8",
         "league/flysystem-sftp-v3": "^3.28",
         "phpoffice/phpspreadsheet": "^2.1",
-        "phpoffice/phpword": "^1.2"
+        "phpoffice/phpword": "^1.2",
+        "phpseclib/phpseclib": "3.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
