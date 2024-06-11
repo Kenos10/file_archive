@@ -54,14 +54,13 @@ Route::middleware('auth')->group(function () {
         return view('viewzip');
     })->name('extract');
 
-    Route::post('/update-starting-value', [ArchiveController::class, 'updateStartingValue'])->name('update.starting.value');
-    Route::get('/setting', [ArchiveController::class, 'setting'])->name('setting');
-    Route::post('/update-storage-path', [ArchiveController::class, 'updateStoragePath'])->name('update.storage.path');
+    Route::get('/settings', [ArchiveController::class, 'showFtpSettings'])->name('settings');
+    Route::post('/update-ftp-settings', [ArchiveController::class, 'updateFtpSettings'])->name('update.ftp.settings');
     Route::get('/downloadzip/{id}', [ArchiveController::class, 'download'])->name('zip');
     Route::get('/storezip/{id}', [ArchiveController::class, 'downloadPath'])->name('store.zip');
 
-    Route::post('/case-format', [CaseFormatController::class, 'store']);
-    Route::post('/file-format', [FileFormatController::class, 'store']);
+    Route::post('/case-format', [CaseFormatController::class, 'store'])->name('case.format.store');
+    Route::post('/file-format', [FileFormatController::class, 'store'])->name('file.format.store');
 
     Route::get('/zip', function () {
         return view('zip');
@@ -77,7 +76,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('zips', ZipExtractController::class);
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
 });
 
 require __DIR__ . '/auth.php';

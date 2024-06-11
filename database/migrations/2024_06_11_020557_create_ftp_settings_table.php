@@ -10,10 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('zip_directories', function (Blueprint $table) {
+        Schema::create('ftp_settings', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('path');
+            $table->string('ftp_host');
+            $table->string('ftp_username');
+            $table->string('ftp_password');
         });
     }
 
@@ -22,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('zip_directories');
+        Schema::dropIfExists('ftp_settings');
     }
 };

@@ -3,22 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 use App\Models\File;
 use App\Models\Patient;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\Archive;
-use App\Models\Configuration;
-use App\Models\CaseFormat;
 use App\Models\ZipDirectory;
-use Log;
-use Exception;
-use Illuminate\Support\Facades\Redirect;
-use phpseclib3\Crypt\RSA;  // Updated namespace
-use phpseclib3\Net\SFTP;   // Updated namespace
+use App\Models\FtpSetting;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 
 class ArchiveController extends Controller
 {
@@ -119,76 +113,59 @@ class ArchiveController extends Controller
 
     public function downloadPath($id)
     {
-        $file = Archive::findOrFail($id);
-        $localFilePath = public_path($file->zip);
+        $file = Archive::where("id", $id)->firstOrFail();
+        $path = $file->zip;
 
-        if (!File::exists($localFilePath)) {
-            return Redirect::back()->withErrors(['error' => 'File not found.']);
+        // Convert public path to storage path
+        $absolutePath = public_path($path);
+
+        if (!file_exists($absolutePath)) {
+            return redirect()->back()->withErrors(['error' => 'File not found.']);
         }
 
-        $targetIpAddress = '192.168.1.89';
-        $username = 'test';
-        $password = '12345';
-
+        // Upload the file to FTP server
         try {
-            $sftp = new \phpseclib3\Net\SFTP($targetIpAddress, 2222);
+            $ftpDisk = Storage::disk('ftp');
+            $remotePath = basename($path); // Only use the filename
 
-            $sftp->sendKEXINITLast(); // Send KEXINIT last for compatibility
-            $sftp->setTimeout(0); // Disable timeout
-            $sftp->setKeepAlive(5); // Set keep-alive interval
-            $sftp->enableDatePreservation(); // Preserve timestamps
+            $ftpDisk->put($remotePath, fopen($absolutePath, 'r+'));
 
-            if (!$sftp->login($username, $password)) {
-                throw new Exception('SFTP login failed.');
-            }
-
-            $remoteDirectory = '/storage/emulated/0';
-            $remoteFileName = basename($localFilePath);
-
-            if (!$sftp->put($remoteDirectory . $remoteFileName, $localFilePath, \phpseclib3\Net\SFTP::SOURCE_LOCAL_FILE)) {
-                throw new Exception('Failed to send file via SFTP.');
-            }
-
-            return Redirect::back()->with('success', 'File sent successfully via SFTP.');
+            // Add a success message to the session
+            return redirect()->back()->with('success', 'File archived successfully');
         } catch (\Exception $e) {
-            return Redirect::back()->withErrors(['error' => $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => 'Failed to archive the file.']);
         }
     }
 
-    public function updateStoragePath(Request $request)
+
+    public function updateFtpSettings(Request $request)
     {
         $request->validate([
-            'storage_path' => 'required|string|ip', // Validate IP address format
+            'ftp_host' => 'required|string',
+            'ftp_username' => 'required|string',
+            'ftp_password' => 'required|string',
         ]);
 
-        ZipDirectory::updateOrCreate(
-            [],
-            ['path' => $request->storage_path]
-        );
+        // Get the existing settings or create a new instance
+        $ftpSetting = FtpSetting::first() ?? new FtpSetting();
 
-        return redirect()->back()->with('success', 'Storage path updated successfully.');
+        // Update the settings
+        $ftpSetting->ftp_host = $request->ftp_host;
+        $ftpSetting->ftp_username = $request->ftp_username;
+        $ftpSetting->ftp_password = $request->ftp_password;
+        $ftpSetting->save();
+
+        return redirect()->back()->with('success', 'FTP settings updated successfully.');
     }
 
-    public function updateStartingValue(Request $request)
+    public function showFtpSettings()
     {
-        $request->validate([
-            'starting_value' => 'required|integer|min:1',
-        ]);
-
-        // Update the starting value in the database
-        Configuration::updateOrCreate(
-            ['key' => 'filenumber.starting_value'],
-            ['value' => $request->starting_value]
-        );
-
-        return redirect()->back()->with('success', 'Starting value updated successfully.');
+        $ftpSetting = FtpSetting::first();
+        return view('settings', compact('ftpSetting'));
     }
 
     public function setting()
     {
-        $storage = ZipDirectory::all()->first();
-
-        // Return the view with both the starting value and the storage path
-        return view('setting', compact('storage'));
+        return view('setting');
     }
 }
