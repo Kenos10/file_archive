@@ -139,7 +139,7 @@ class ArchiveController extends Controller
                 'host' => $ftpSetting->ftp_host,
                 'username' => $ftpSetting->ftp_username,
                 'password' => $ftpSetting->ftp_password,
-                'port' => 21,
+                'port' => $ftpSetting->ftp_port,
             ]);
 
             $ftpDisk = Storage::disk('ftp');
