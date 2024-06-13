@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('ftp_host');
             $table->string('ftp_username');
             $table->string('ftp_password');
+            $table->integer('ftp_port')->default(2222);
         });
     }
 

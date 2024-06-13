@@ -50,11 +50,18 @@
                                 <input type="password" id="ftp_password" name="ftp_password"
                                     class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                             </div>
+                            <div class="mb-4">
+                                <label for="ftp_port" class="block text-gray-700">FTP Port:</label>
+                                <input type="number" id="ftp_port" name="ftp_port"
+                                    value="{{ old('ftp_port', $ftpSetting->ftp_port ?? 2222) }}"
+                                    class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                            </div>
                             <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md">Update FTP
                                 Settings</button>
                         </form>
                     </div>
                 </div>
+
 
                 <!-- File Sequence Number -->
                 <div class="w-full lg:max-w-2xl">

@@ -144,18 +144,18 @@ class ArchiveController extends Controller
             'ftp_host' => 'required|string',
             'ftp_username' => 'required|string',
             'ftp_password' => 'required|string',
+            'ftp_port' => 'required|integer',
         ]);
 
-        // Get the existing settings or create a new instance
-        $ftpSetting = FtpSetting::first() ?? new FtpSetting();
+        $ftpSetting = FtpSetting::first();
 
-        // Update the settings
-        $ftpSetting->ftp_host = $request->ftp_host;
-        $ftpSetting->ftp_username = $request->ftp_username;
-        $ftpSetting->ftp_password = $request->ftp_password;
-        $ftpSetting->save();
+        if ($ftpSetting) {
+            $ftpSetting->update($request->all());
+        } else {
+            FtpSetting::create($request->all());
+        }
 
-        return redirect()->back()->with('success', 'FTP settings updated successfully.');
+        return redirect()->back()->with('success', 'FTP settings updated successfully');
     }
 
     public function showFtpSettings()

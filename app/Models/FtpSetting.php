@@ -9,5 +9,10 @@ class FtpSetting extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['ftp_host', 'ftp_username', 'ftp_password'];
+    protected $fillable = [
+        'ftp_host',
+        'ftp_username',
+        'ftp_password',
+        'ftp_port',
+    ];
 }
