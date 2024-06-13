@@ -50,6 +50,24 @@ class PatientController extends Controller
             'dateOfBirth' => 'required|date',
         ]);
 
+        // Check if CaseFormat and FileFormat are set
+        $caseFormatExists = CaseFormat::exists();
+        $fileFormatExists = FileFormat::exists();
+
+        // Collect error messages if either CaseFormat or FileFormat is not set
+        $errors = [];
+        if (!$caseFormatExists) {
+            $errors[] = 'CaseFormat is not set.';
+        }
+        if (!$fileFormatExists) {
+            $errors[] = 'FileFormat is not set.';
+        }
+
+        // Redirect back with errors if any exist
+        if ($errors) {
+            return redirect()->back()->withErrors($errors);
+        }
+
         // Generate random password and encrypt it
         $password = Str::random(8);
         $encryptedPassword = encrypt($password);
@@ -72,16 +90,13 @@ class PatientController extends Controller
 
         $patient->save();
 
-        // Increment auto number after inserting patient record
+        // Increment auto numbers separately for CaseFormat and FileFormat
         CaseFormat::incrementAutoNumber();
-
-        // Update starter number in file_format
-        $fileFormat = FileFormat::first();
-        $fileFormat->starter_number = CaseFormat::first()->starter_number;
-        $fileFormat->save();
+        FileFormat::incrementAutoNumber();
 
         return redirect()->back()->with('success', 'Patient created successfully.');
     }
+
 
     private function getNextAvailableStarterNumber($currentStarterNumber)
     {
