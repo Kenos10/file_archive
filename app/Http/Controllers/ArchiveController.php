@@ -13,6 +13,7 @@ use App\Models\FtpSetting;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 class ArchiveController extends Controller
 {
@@ -123,8 +124,24 @@ class ArchiveController extends Controller
             return redirect()->back()->withErrors(['error' => 'File not found.']);
         }
 
+        // Retrieve FTP settings from the database
+        $ftpSetting = FtpSetting::first();
+
+        if (!$ftpSetting) {
+            return redirect()->back()->withErrors(['error' => 'FTP settings not found.']);
+        }
+
         // Upload the file to FTP server
         try {
+            // Set the FTP configuration
+            Config::set('filesystems.disks.ftp', [
+                'driver' => 'ftp',
+                'host' => $ftpSetting->ftp_host,
+                'username' => $ftpSetting->ftp_username,
+                'password' => $ftpSetting->ftp_password,
+                'port' => 21,
+            ]);
+
             $ftpDisk = Storage::disk('ftp');
             $remotePath = basename($path); // Only use the filename
 
