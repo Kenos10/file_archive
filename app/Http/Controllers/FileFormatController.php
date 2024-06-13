@@ -27,13 +27,9 @@ class FileFormatController extends Controller
             'include_hyphens' => 'boolean',
         ]);
 
-        // Ensure auto_number is interpreted correctly
-        $request->merge(['auto_number' => $request->has('auto_number')]);
-
         // Delete any existing records
         FileFormat::truncate();
 
-        // Create the new record
         $created = FileFormat::create($request->all());
 
         return back()->with('success', 'Record created successfully');

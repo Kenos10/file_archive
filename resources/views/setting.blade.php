@@ -58,6 +58,7 @@
 
                 <!-- File Sequence Number -->
                 <div class="w-full lg:max-w-2xl">
+                    <!-- File Number -->
                     <div class="bg-white shadow-md rounded-lg mb-6">
                         <div class="bg-gray-100 px-6 py-4 border-b">
                             <h3 class="text-lg font-semibold">File Number</h3>
@@ -65,6 +66,7 @@
                         <div class="px-6 py-4">
                             <form id="fileNumberForm" method="POST" action="/file-format">
                                 @csrf
+                                <!-- Prefix Section -->
                                 <div class="mb-4">
                                     <label for="prefix" class="block text-gray-700">Prefix:</label>
                                     <select id="prefix" name="prefix"
@@ -112,6 +114,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Suffix Section -->
                                 <div class="mb-4">
                                     <label for="suffix" class="block text-gray-700">Suffix:</label>
                                     <select id="suffix" name="suffix"
@@ -159,9 +162,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Auto Number Section -->
                                 <div class="mb-4">
                                     <label for="autoNumber" class="block text-gray-700">Auto Number:</label>
-                                    <input type="hidden" name="auto_number" value="0"> <!-- Add this line -->
+                                    <input type="hidden" name="auto_number" value="0">
                                     <input type="checkbox" id="autoNumber" name="auto_number" value="1"
                                         class="mr-2 leading-tight">
                                 </div>
@@ -170,9 +174,18 @@
                                     <input type="number" id="starterNumber" name="starter_number"
                                         class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                                 </div>
+                                <div id="autoNumberFormatDetails" class="mb-4 hidden">
+                                    <label for="autoNumberFormat" class="block text-gray-700">Auto Number
+                                        Format:</label>
+                                    <input type="text" id="autoNumberFormat" name="auto_number_format"
+                                        value="000"
+                                        class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                                </div>
+                                <!-- Include Hyphens Section -->
                                 <div class="mb-4">
                                     <label for="includeHyphens" class="block text-gray-700">Include Hyphens:</label>
-                                    <input type="checkbox" id="includeHyphens" name="include_hyphens"
+                                    <input type="hidden" name="include_hyphens" value="0">
+                                    <input type="checkbox" id="includeHyphens" name="include_hyphens" value="1"
                                         class="mr-2 leading-tight">
                                 </div>
                                 <button type="submit"
@@ -189,6 +202,7 @@
                         <div class="px-6 py-4">
                             <form id="caseNumberForm" method="POST" action="/case-format">
                                 @csrf
+                                <!-- Prefix Section -->
                                 <div class="mb-4">
                                     <label for="casePrefix" class="block text-gray-700">Prefix:</label>
                                     <select id="casePrefix" name="prefix"
@@ -236,6 +250,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Suffix Section -->
                                 <div class="mb-4">
                                     <label for="caseSuffix" class="block text-gray-700">Suffix:</label>
                                     <select id="caseSuffix" name="suffix"
@@ -283,96 +298,133 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Auto Number Section -->
                                 <div class="mb-4">
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="caseAutoNumber" name="auto_number" value="1"
-                                            class="mr-2">
-                                        <label for="caseAutoNumber" class="text-gray-700">Autonumber</label>
-                                    </div>
-                                    <div id="caseAutoNumberDetails" class="mt-2 hidden">
-                                        <label for="caseStarterNumber" class="block text-gray-700">Starter
-                                            Number:</label>
-                                        <input type="number" id="caseStarterNumber" name="starter_number"
-                                            min="0"
-                                            class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                                    </div>
+                                    <label for="caseAutoNumber" class="block text-gray-700">Auto Number:</label>
+                                    <input type="hidden" name="auto_number" value="0">
+                                    <input type="checkbox" id="caseAutoNumber" name="auto_number" value="1"
+                                        class="mr-2 leading-tight">
                                 </div>
+                                <div id="caseStarterNumberDetails" class="mb-4 hidden">
+                                    <label for="caseStarterNumber" class="block text-gray-700">Starter Number:</label>
+                                    <input type="number" id="caseStarterNumber" name="starter_number"
+                                        class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                                </div>
+                                <div id="caseAutoNumberFormatDetails" class="mb-4 hidden">
+                                    <label for="caseAutoNumberFormat" class="block text-gray-700">Auto Number
+                                        Format:</label>
+                                    <input type="text" id="caseAutoNumberFormat" name="auto_number_format"
+                                        value="000"
+                                        class="block w-full px-3 py-2 border rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                                </div>
+                                <!-- Include Hyphens Section -->
                                 <div class="mb-4">
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="caseIncludeHyphens" name="include_hyphens"
-                                            value="1" class="mr-2">
-                                        <label for="caseIncludeHyphens" class="text-gray-700">Include Hyphens</label>
-                                    </div>
+                                    <label for="caseIncludeHyphens" class="block text-gray-700">Include
+                                        Hyphens:</label>
+                                    <input type="hidden" name="include_hyphens" value="0">
+                                    <input type="checkbox" id="caseIncludeHyphens" name="include_hyphens"
+                                        value="1" class="mr-2 leading-tight">
                                 </div>
-                                <div class="flex justify-start mb-2">
-                                    <button type="submit"
-                                        class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Save</button>
-                                </div>
+                                <button type="submit"
+                                    class="px-4 py-2 bg-blue-500 text-white rounded-md">Save</button>
                             </form>
                         </div>
                     </div>
-
-                    <x-slot name="scripts">
-                        <script>
-                            document.addEventListener("DOMContentLoaded", function() {
-                                const toggleVisibility = (selectElement, detailsId, dateDetailsId) => {
-                                    selectElement.addEventListener("change", function() {
-                                        const details = document.getElementById(detailsId);
-                                        const dateDetails = document.getElementById(dateDetailsId);
-                                        if (this.value === "string") {
-                                            details.classList.remove("hidden");
-                                            dateDetails.classList.add("hidden");
-                                        } else if (this.value === "date") {
-                                            details.classList.add("hidden");
-                                            dateDetails.classList.remove("hidden");
-                                        } else {
-                                            details.classList.add("hidden");
-                                            dateDetails.classList.add("hidden");
-                                        }
-                                    });
-                                };
-
-                                toggleVisibility(document.getElementById("prefix"), "prefixDetails", "prefixDateDetails");
-                                toggleVisibility(document.getElementById("suffix"), "suffixDetails", "suffixDateDetails");
-
-                                toggleVisibility(document.getElementById("casePrefix"), "casePrefixDetails", "casePrefixDateDetails");
-                                toggleVisibility(document.getElementById("caseSuffix"), "caseSuffixDetails", "caseSuffixDateDetails");
-
-                                const autoNumber = document.getElementById("autoNumber");
-                                const autoNumberDetails = document.getElementById("starterNumberDetails");
-                                autoNumber.addEventListener("change", function() {
-                                    autoNumberDetails.classList.toggle("hidden", !this.checked);
-                                });
-
-                                const caseAutoNumber = document.getElementById("caseAutoNumber");
-                                const caseAutoNumberDetails = document.getElementById("caseAutoNumberDetails");
-                                caseAutoNumber.addEventListener("change", function() {
-                                    caseAutoNumberDetails.classList.toggle("hidden", !this.checked);
-                                });
-                            });
-
-                            function formatDate(date, type) {
-                                const year = date.slice(0, 4);
-                                const month = date.slice(5, 7);
-                                const day = date.slice(8, 10);
-                                const yearFormat = document.querySelector(`input[name="${type}YearFormat"]:checked`).value;
-                                let formattedDate = "";
-
-                                if (document.getElementById(`${type}YearOnly`).checked) {
-                                    formattedDate += yearFormat === 'short' ? year.slice(2) : year;
-                                }
-                                if (document.getElementById(`${type}MonthOnly`).checked) {
-                                    formattedDate += (formattedDate && document.getElementById('includeHyphens').checked ? '-' : '') + month;
-                                }
-                                if (document.getElementById(`${type}DayOnly`).checked) {
-                                    formattedDate += (formattedDate && document.getElementById('includeHyphens').checked ? '-' : '') + day;
-                                }
-
-                                return formattedDate;
-                            }
-                        </script>
-                    </x-slot>
                 </div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        const prefixElements = {
+                            prefix: document.getElementById('prefix'),
+                            details: document.getElementById('prefixDetails'),
+                            dateDetails: document.getElementById('prefixDateDetails')
+                        };
+
+                        const suffixElements = {
+                            suffix: document.getElementById('suffix'),
+                            details: document.getElementById('suffixDetails'),
+                            dateDetails: document.getElementById('suffixDateDetails')
+                        };
+
+                        const autoNumberElements = {
+                            autoNumber: document.getElementById('autoNumber'),
+                            starterDetails: document.getElementById('starterNumberDetails'),
+                            formatDetails: document.getElementById('autoNumberFormatDetails')
+                        };
+
+                        const casePrefixElements = {
+                            prefix: document.getElementById('casePrefix'),
+                            details: document.getElementById('casePrefixDetails'),
+                            dateDetails: document.getElementById('casePrefixDateDetails')
+                        };
+
+                        const caseSuffixElements = {
+                            suffix: document.getElementById('caseSuffix'),
+                            details: document.getElementById('caseSuffixDetails'),
+                            dateDetails: document.getElementById('caseSuffixDateDetails')
+                        };
+
+                        const caseAutoNumberElements = {
+                            autoNumber: document.getElementById('caseAutoNumber'),
+                            starterDetails: document.getElementById('caseStarterNumberDetails'),
+                            formatDetails: document.getElementById('caseAutoNumberFormatDetails')
+                        };
+
+                        function handleSelection(elements, value) {
+                            const {
+                                details,
+                                dateDetails
+                            } = elements;
+                            details.classList.add('hidden');
+                            dateDetails.classList.add('hidden');
+
+                            if (value === 'string') {
+                                details.classList.remove('hidden');
+                            } else if (value === 'date') {
+                                dateDetails.classList.remove('hidden');
+                            }
+                        }
+
+                        function handleAutoNumber(elements, checked) {
+                            const {
+                                starterDetails,
+                                formatDetails
+                            } = elements;
+                            if (checked) {
+                                starterDetails.classList.remove('hidden');
+                                formatDetails.classList.remove('hidden');
+                            } else {
+                                starterDetails.classList.add('hidden');
+                                formatDetails.classList.add('hidden');
+                            }
+                        }
+
+                        prefixElements.prefix.addEventListener('change', function() {
+                            handleSelection(prefixElements, this.value);
+                        });
+
+                        suffixElements.suffix.addEventListener('change', function() {
+                            handleSelection(suffixElements, this.value);
+                        });
+
+                        autoNumberElements.autoNumber.addEventListener('change', function() {
+                            handleAutoNumber(autoNumberElements, this.checked);
+                        });
+
+                        casePrefixElements.prefix.addEventListener('change', function() {
+                            handleSelection(casePrefixElements, this.value);
+                        });
+
+                        caseSuffixElements.suffix.addEventListener('change', function() {
+                            handleSelection(caseSuffixElements, this.value);
+                        });
+
+                        caseAutoNumberElements.autoNumber.addEventListener('change', function() {
+                            handleAutoNumber(caseAutoNumberElements, this.checked);
+                        });
+                    });
+                </script>
+
             </div>
         </div>
 </x-app-layout>

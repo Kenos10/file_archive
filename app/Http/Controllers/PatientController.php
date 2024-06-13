@@ -15,14 +15,17 @@ class PatientController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $patients = Patient::where('firstName', 'like', '%' . $search . '%')
-            ->orWhere('middleName', 'like', '%' . $search . '%')
-            ->orWhere('lastName', 'like', '%' . $search . '%')
-            ->orWhere('hospitalRecordId', 'like', '%' . $search . '%')
-            ->orWhere('caseNo', 'like', '%' . $search . '%')
-            ->orWhere('fileNo', 'like', '%' . $search . '%')
+        $patients = Patient::where(function ($query) use ($search) {
+            $query->where('firstName', 'like', '%' . $search . '%')
+                ->orWhere('middleName', 'like', '%' . $search . '%')
+                ->orWhere('lastName', 'like', '%' . $search . '%')
+                ->orWhere('hospitalRecordId', 'like', '%' . $search . '%')
+                ->orWhere('caseNo', 'like', '%' . $search . '%')
+                ->orWhere('fileNo', 'like', '%' . $search . '%');
+        })
             ->orderByDesc('created_at')
             ->paginate(8);
+
         return view('patientlist', compact('patients'));
     }
 
@@ -32,19 +35,13 @@ class PatientController extends Controller
         $files = File::where('hospitalRecordId', $hospitalRecordId)->get();
         $zipfile = Archive::where('hospitalRecordId', $hospitalRecordId)->get();
 
-        if ($patient->password) {
-            $decryptedPassword = decrypt($patient->password);
-        } else {
-            $decryptedPassword = null;
-        }
+        $decryptedPassword = $patient->password ? decrypt($patient->password) : null;
 
         return view('viewpatient', compact('patient', 'files', 'zipfile', 'decryptedPassword'));
     }
 
-    // Store a newly created resource in storage.
     public function store(Request $request)
     {
-        // Validate the request data
         $validatedData = $request->validate([
             'hospitalRecordId' => 'required|numeric|digits:8|unique:patients',
             'firstName' => 'required|string',
@@ -53,32 +50,16 @@ class PatientController extends Controller
             'dateOfBirth' => 'required|date',
         ]);
 
-        // Generate a random password
+        // Generate random password and encrypt it
         $password = Str::random(8);
         $encryptedPassword = encrypt($password);
 
-        // Get the next case number
+        // Get next case number and file number
         $caseNo = CaseFormat::getNextCaseNo();
+        $fileNo = FileFormat::getNextFileNo();
 
-        // Check if the case number already exists
-        $existingPatient = Patient::where('caseNo', $caseNo)->first();
-
-        if ($existingPatient) {
-            // Retrieve the existing file number associated with the case number
-            $fileNo = $existingPatient->fileNo;
-        } else {
-            // Generate a new file number if the case number doesn't exist
-            $fileNo = FileFormat::getNextFileNo();
-
-            // Check if the generated file number already exists
-            while (Patient::where('fileNo', $fileNo)->exists()) {
-                $fileNo = FileFormat::getNextFileNo(); // Generate a new file number
-            }
-        }
-
-        // Create a new Patient record
-        $patient = new Patient();
-        $patient->fill([
+        // Create a new patient record
+        $patient = new Patient([
             'hospitalRecordId' => $validatedData['hospitalRecordId'],
             'caseNo' => $caseNo,
             'fileNo' => $fileNo,
@@ -88,17 +69,17 @@ class PatientController extends Controller
             'dateOfBirth' => $validatedData['dateOfBirth'],
             'password' => $encryptedPassword,
         ]);
+
         $patient->save();
 
-        // Increment the starter number after inserting the patient record
+        // Increment auto number after inserting patient record
         CaseFormat::incrementAutoNumber();
 
-        // Update the starter number in file_format
+        // Update starter number in file_format
         $fileFormat = FileFormat::first();
         $fileFormat->starter_number = CaseFormat::first()->starter_number;
         $fileFormat->save();
 
-        // Redirect back with a success message
         return redirect()->back()->with('success', 'Patient created successfully.');
     }
 

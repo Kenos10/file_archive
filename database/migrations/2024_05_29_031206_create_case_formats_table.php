@@ -26,6 +26,7 @@ class CreateCaseFormatsTable extends Migration
             $table->boolean('suffix_day_only')->default(false);
             $table->boolean('auto_number')->default(false);
             $table->integer('starter_number')->default(1);
+            $table->string('auto_number_format')->default('000');
             $table->boolean('include_hyphens')->default(false);
             $table->timestamps();
         });

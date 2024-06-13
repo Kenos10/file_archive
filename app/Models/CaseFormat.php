@@ -13,84 +13,88 @@ class CaseFormat extends Model
     protected $fillable = [
         'prefix',
         'prefix_value',
+        'prefix_date',
         'prefix_year_format',
         'prefix_year_only',
         'prefix_month_only',
         'prefix_day_only',
         'suffix',
         'suffix_value',
+        'suffix_date',
         'suffix_year_format',
         'suffix_year_only',
         'suffix_month_only',
         'suffix_day_only',
         'auto_number',
         'starter_number',
-        'include_hyphens',
+        'auto_number_format',
+        'include_hyphens'
     ];
 
     public static function getNextCaseNo()
     {
-        $format = self::first();
-        $date = Carbon::now();
+        $caseFormat = self::firstOrFail(); // Retrieve the first CaseFormat entry or fail if not found
 
-        $prefix = self::formatDateComponent($format, 'prefix', $date);
-        $suffix = self::formatDateComponent($format, 'suffix', $date);
-        $autoNumber = self::getAutoNumber($format);
+        $prefix = $caseFormat->prefix;
+        $suffix = $caseFormat->suffix;
+        $includeHyphens = $caseFormat->include_hyphens ? '-' : '';
 
-        $caseNo = $prefix . ($format->include_hyphens ? '-' : '') . $autoNumber . ($format->include_hyphens ? '-' : '') . $suffix;
+        $caseNo = '';
+
+        // Add prefix
+        if ($prefix === 'string') {
+            $caseNo .= $caseFormat->prefix_value ?? '';
+        } elseif ($prefix === 'date') {
+            $caseNo .= self::formatDateComponent($caseFormat, 'prefix', now());
+        }
+
+        // Add auto number
+        if ($caseFormat->auto_number) {
+            $formattedStarterNumber = str_pad($caseFormat->starter_number, strlen($caseFormat->auto_number_format), '0', STR_PAD_LEFT);
+            $caseNo .= $includeHyphens . $formattedStarterNumber;
+        } else {
+            $caseNo .= $includeHyphens . $caseFormat->starter_number;
+        }
+
+        // Add suffix
+        if ($suffix === 'string') {
+            $caseNo .= $includeHyphens . ($caseFormat->suffix_value ?? '');
+        } elseif ($suffix === 'date') {
+            $caseNo .= $includeHyphens . self::formatDateComponent($caseFormat, 'suffix', now());
+        }
 
         return $caseNo;
     }
 
     private static function formatDateComponent($format, $type, $date)
     {
-        $component = '';
+        $parts = [];
 
-        if ($format->{$type} === 'date') {
-            $componentParts = [];
-
-            if ($format->{$type . '_year_only'}) {
-                $componentParts[] = $date->format($format->{$type . '_year_format'} === 'short' ? 'y' : 'Y');
-            }
-
-            if ($format->{$type . '_month_only'}) {
-                $componentParts[] = $date->format('m');
-            }
-
-            if ($format->{$type . '_day_only'}) {
-                $componentParts[] = $date->format('d');
-            }
-
-            if (empty($componentParts)) {
-                $componentParts[] = $date->format('Y-m-d');
-            }
-
-            $component = implode($format->include_hyphens ? '-' : '', $componentParts);
-        } elseif ($format->{$type} === 'string') {
-            $component = $format->{$type . '_value'};
+        if ($format->{$type . '_year_only'}) {
+            $parts[] = $date->format($format->{$type . '_year_format'} === 'short' ? 'y' : 'Y');
         }
 
-        return $component;
-    }
-
-    private static function getAutoNumber($format)
-    {
-        $autoNumber = '';
-
-        if ($format->auto_number) {
-            $currentNumber = $format->starter_number ?? 1;
-            $autoNumber = str_pad($currentNumber, 3, '0', STR_PAD_LEFT);
+        if ($format->{$type . '_month_only'}) {
+            $parts[] = $date->format('m');
         }
 
-        return $autoNumber;
+        if ($format->{$type . '_day_only'}) {
+            $parts[] = $date->format('d');
+        }
+
+        if (empty($parts)) {
+            $parts[] = $date->format('Ymd');
+        }
+
+        return implode('', $parts);
     }
 
     public static function incrementAutoNumber()
     {
-        $format = self::first();
+        $format = self::firstOrFail(); // Retrieve the first CaseFormat entry or fail if not found
+
         if ($format->auto_number) {
-            $format->starter_number = ($format->starter_number ?? 1) + 1;
-            $format->save();
+            $format->increment('starter_number');
         }
     }
 }

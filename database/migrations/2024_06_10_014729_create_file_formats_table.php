@@ -25,6 +25,7 @@ class CreateFileFormatsTable extends Migration
             $table->boolean('suffix_month_only')->default(false);
             $table->boolean('suffix_day_only')->default(false);
             $table->boolean('auto_number')->default(false);
+            $table->string('auto_number_format')->default('000');
             $table->integer('starter_number')->default(1);
             $table->boolean('include_hyphens')->default(false);
             $table->timestamps();
